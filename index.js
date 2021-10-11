@@ -76,7 +76,7 @@ app.post("/login", (req, res) => {
 
 app.post("/register", async (req, res) => {
     req.flash("success", "Successfully registered!");
-    res.redirect("/dashboard");
+    res.send(req.body);
 })
 
 app.listen(PORT, () => {
