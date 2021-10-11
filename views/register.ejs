@@ -14,28 +14,36 @@
     <div class="row">
         <h1 class="text-center">Register</h1>
         <div class="col-6 offset-3">
-            <form class="validated-form" novalidate action="/register" method="POST">
-                <div class="mb-3">
 
-                    <label class="form-label" for="username">Username</label>
-                    <input class="form-control" type="text" id="username" name="username" required>
-                    <div class="valid-feedback"></div>
+            <% if(error && error.length){ %>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <%= error %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
+                <% } %>
 
-                <div class="mb-3">
-                    <label class="form-label" for="email">Email</label>
-                    <input class="form-control" type="email" id="email" name="email" required>
-                    <div class="valid-feedback"></div>
-                </div>
+                    <form class="validated-form" novalidate action="/register" method="POST">
+                        <div class="mb-3">
 
-                <div class="mb-3">
-                    <label class="form-label" for="password">Password</label>
-                    <input class="form-control" type="password" id="password" name="password" required>
-                    <div class="valid-feedback"></div>
-                </div>
+                            <label class="form-label" for="username">Username</label>
+                            <input class="form-control" type="text" id="username" name="username" required>
+                            <div class="valid-feedback"></div>
+                        </div>
 
-                <button class="btn btn-success">Register</button>
-            </form>
+                        <div class="mb-3">
+                            <label class="form-label" for="email">Email</label>
+                            <input class="form-control" type="email" id="email" name="email" required>
+                            <div class="valid-feedback"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="password">Password</label>
+                            <input class="form-control" type="password" id="password" name="password" required>
+                            <div class="valid-feedback"></div>
+                        </div>
+
+                        <button class="btn btn-success">Register</button>
+                    </form>
         </div>
     </div>
 
