@@ -34,6 +34,7 @@ const sessionConfig = {
 }
 const passport = require("passport");
 const localStrategy = require("passport-local");
+const User = require("./models/User");
 
 app.use(session(sessionConfig));
 app.use(flash());
@@ -75,9 +76,19 @@ app.post("/login", (req, res) => {
 })
 
 app.post("/register", async (req, res) => {
-    req.flash("success", "Successfully registered!");
-    res.send(req.body);
-})
+    try {
+        const { email, username, password } = req.body;
+        const user = new User({ email, username });
+        const registeredUser = await UserModel.register(user, password);
+        console.log(registeredUser);
+        req.flash("success", "Successfully registered!");
+        res.redirect("/dashboard");
+    }
+    catch (err) {
+        req.flash("error", err.message);
+        res.redirect("/register");
+    }
+});
 
 app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
