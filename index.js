@@ -77,8 +77,8 @@ app.post("/login", passport.authenticate("local", { failureFlash: true, failureR
 
 app.post("/register", async (req, res) => {
     try {
-        const { email, username, password } = req.body;
-        const user = new UserModel({ email, username });
+        const { email, username, password, city } = req.body;
+        const user = new UserModel({ email, username, city });
         const registeredUser = await UserModel.register(user, password);
         req.login(registeredUser, error => {
             if (error) return next(error);

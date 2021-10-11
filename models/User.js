@@ -7,6 +7,10 @@ const userSchema = new Schema({
         type: String,
         required: true,
         unique: true
+    },
+    city: {
+        type: String,
+        required: true
     }
 });
 userSchema.plugin(passportLocalMongoose);
