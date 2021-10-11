@@ -63,6 +63,12 @@ app.get("/dashboard", (req, res) => {
     res.render("dashboard.ejs");
 })
 
+app.get("/logout", (req, res) => {
+    req.logout();
+    req.flash("success", "Successfully logged out!");
+    res.redirect("/");
+})
+
 app.post("/login", passport.authenticate("local", { failureFlash: true, failureRedirect: "/login" }), (req, res) => {
     req.flash("success", "Welcome back!");
     res.redirect("/dashboard");
@@ -71,11 +77,13 @@ app.post("/login", passport.authenticate("local", { failureFlash: true, failureR
 app.post("/register", async (req, res) => {
     try {
         const { email, username, password } = req.body;
-        const user = new User({ email, username });
+        const user = new UserModel({ email, username });
         const registeredUser = await UserModel.register(user, password);
-        console.log(registeredUser);
-        req.flash("success", "Successfully registered!");
-        res.redirect("/dashboard");
+        req.login(registeredUser, error => {
+            if (error) return next(error);
+            req.flash("success", "Successfully registered!");
+            res.redirect("/dashboard");
+        })
     }
     catch (err) {
         req.flash("error", err.message);
