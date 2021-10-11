@@ -6,14 +6,14 @@ const localStrategy = require("passport-local");
 const session = require("express-session");
 const flash = require("connect-flash");
 const UserModel = require("./models/User");
-
+const ejsMate = require("ejs-mate");
 mongoose.connect('mongodb://localhost:27017/matchUp')
     .then(() => console.log("Connected to MongoDB"))
     .catch((err) => console.log(err));
 
-
 const app = express();
 
+app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
