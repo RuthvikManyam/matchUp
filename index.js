@@ -1,40 +1,33 @@
 const express = require("express");
-const app = express();
+const path = require("path");
 const mongoose = require("mongoose");
+const passport = require("passport");
+const localStrategy = require("passport-local");
+const session = require("express-session");
+const flash = require("connect-flash");
+const UserModel = require("./models/User");
+
 mongoose.connect('mongodb://localhost:27017/matchUp')
     .then(() => console.log("Connected to MongoDB"))
     .catch((err) => console.log(err));
-const path = require("path");
-const session = require("express-session");
-const flash = require("connect-flash");
-const MongoDBSession = require("connect-mongodb-session")(session);
-const TWO_HOURS = 1000 * 60 * 60 * 2;
-const MongoDBstore = new MongoDBSession({
-    uri: "mongodb://localhost:27017/matchUp",
-    collection: "sessions"
-});
-const UserModel = require("./models/User");
-const { resourceLimits } = require("worker_threads");
-const {
-    PORT = 3000,
-    SESSION_SECRET = 'defaultSecretKey',
-    SESSION_LIFETIME = TWO_HOURS
-} = process.env
+
+
+const app = express();
+
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+app.use(express.urlencoded({ extended: true }));
+
 const sessionConfig = {
-    secret: SESSION_SECRET,
-    store: MongoDBstore,
+    secret: "defaultKey",
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     cookie: {
         httpOnly: true,
-        secure: true,
-        expires: SESSION_LIFETIME,
-        maxAge: SESSION_LIFETIME
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
     }
 }
-const passport = require("passport");
-const localStrategy = require("passport-local");
-const User = require("./models/User");
 
 app.use(session(sessionConfig));
 app.use(flash());
@@ -49,13 +42,8 @@ app.use((req, res, next) => {
     res.locals.error = req.flash("error");
     next();
 })
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
-app.use(express.urlencoded({ extended: true }));
-
 
 app.get("/", (req, res) => {
-    req.session.isAuth = true;
     res.render("home.ejs");
 })
 
@@ -68,6 +56,10 @@ app.get("/register", (req, res) => {
 })
 
 app.get("/dashboard", (req, res) => {
+    if (!req.isAuthenticated()) {
+        req.flash("error", "You need to be signed in!");
+        return res.redirect("/login");
+    }
     res.render("dashboard.ejs");
 })
 
@@ -91,6 +83,6 @@ app.post("/register", async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}`);
+app.listen(3000, () => {
+    console.log(`Listening on port 3000`);
 })
