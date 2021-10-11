@@ -32,9 +32,17 @@ const sessionConfig = {
         maxAge: SESSION_LIFETIME
     }
 }
+const passport = require("passport");
+const localStrategy = require("passport-local");
 
 app.use(session(sessionConfig));
 app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new localStrategy(UserModel.authenticate()));
+passport.serializeUser(UserModel.serializeUser());
+passport.deserializeUser(UserModel.deserializeUser());
+
 app.use((req, res, next) => {
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
@@ -43,6 +51,7 @@ app.use((req, res, next) => {
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
+
 
 app.get("/", (req, res) => {
     req.session.isAuth = true;
@@ -62,7 +71,6 @@ app.get("/dashboard", (req, res) => {
 })
 
 app.post("/login", (req, res) => {
-    req.flash("success", "Successfully logged in!");
     res.redirect("/dashboard");
 })
 
