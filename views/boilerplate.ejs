@@ -19,8 +19,13 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                <div class="navbar-nav">
-                    <a class="nav-link active" href="/">Home</a>
+                <div class="navbar-nav ms-auto">
+                    <% if(!currentUser) { %>
+                        <a class="nav-link active" href="/login">Login</a>
+                        <a class="nav-link active" href="/register">Register</a>
+                        <% } else { %>
+                            <a class="nav-link active" href="/logout">Logout</a>
+                            <% } %>
                 </div>
             </div>
         </div>
