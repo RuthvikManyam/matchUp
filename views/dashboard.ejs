@@ -12,8 +12,9 @@
 
             <div class="row mt-5">
                 <div class="col-6 ms-auto">
+                    <h3 class="text-center">Profiles you may be interested in ..</h3>
                     <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-                        <div style="max-height: 700px" class="carousel-inner">
+                        <div style="max-height: 900px" class="carousel-inner">
                             <% users.forEach((user, i)=> {%>
                                 <div class="carousel-item <%= i==0?'active':'' %> ">
                                     <div class="card d-block w-100">
@@ -23,7 +24,17 @@
                                                 <%= user.username %>
                                             </h5>
                                             <p class="card-text">User's profile description goes here</p>
-                                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item">
+                                                    <%= user.email %>
+                                                </li>
+                                                <li class="list-group-item">
+                                                    <%= user.city %>
+                                                </li>
+                                            </ul>
+                                            <div class="text-center card-body">
+                                                <a href="/" class="card-link">Card link</a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
