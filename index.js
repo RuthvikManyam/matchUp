@@ -6,16 +6,20 @@ const localStrategy = require("passport-local");
 const session = require("express-session");
 const flash = require("connect-flash");
 const UserModel = require("./models/User");
+<<<<<<< HEAD
 const WrapAsync = require('./utils/WrapAsync');
 const AppError = require('./utils/AppError');
 
+=======
+const ejsMate = require("ejs-mate");
+>>>>>>> upstream/main
 mongoose.connect('mongodb://localhost:27017/matchUp')
     .then(() => console.log("Connected to MongoDB"))
     .catch((err) => console.log(err));
 
-
 const app = express();
 
+app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
@@ -40,6 +44,7 @@ passport.serializeUser(UserModel.serializeUser());
 passport.deserializeUser(UserModel.deserializeUser());
 
 app.use((req, res, next) => {
+    res.locals.currentUser = req.user;
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
     next();
@@ -51,10 +56,6 @@ app.get("/", (req, res) => {
 
 app.get("/login", (req, res) => {
     res.render("login.ejs");
-})
-
-app.get("/register", (req, res) => {
-    res.render("register.ejs");
 })
 
 app.get("/dashboard", (req, res) => {
@@ -78,8 +79,8 @@ app.post("/login", passport.authenticate("local", { failureFlash: true, failureR
 
 app.post("/register", WrapAsync( async (req, res) => {
     try {
-        const { email, username, password } = req.body;
-        const user = new UserModel({ email, username });
+        const { email, username, password, city } = req.body;
+        const user = new UserModel({ email, username, city });
         const registeredUser = await UserModel.register(user, password);
         req.login(registeredUser, error => {
             if (error) return next(error);
