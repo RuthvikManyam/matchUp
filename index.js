@@ -6,6 +6,8 @@ const localStrategy = require("passport-local");
 const session = require("express-session");
 const flash = require("connect-flash");
 const UserModel = require("./models/User");
+const WrapAsync = require('./utils/WrapAsync');
+const AppError = require('./utils/AppError');
 
 mongoose.connect('mongodb://localhost:27017/matchUp')
     .then(() => console.log("Connected to MongoDB"))
@@ -74,7 +76,7 @@ app.post("/login", passport.authenticate("local", { failureFlash: true, failureR
     res.redirect("/dashboard");
 })
 
-app.post("/register", async (req, res) => {
+app.post("/register", WrapAsync( async (req, res) => {
     try {
         const { email, username, password } = req.body;
         const user = new UserModel({ email, username });
@@ -89,7 +91,16 @@ app.post("/register", async (req, res) => {
         req.flash("error", err.message);
         res.redirect("/register");
     }
-});
+}));
+
+app.all('*', (req, res , next) => {
+    next(new AppError('Page Not Found', 404))
+})
+
+app.use((err, req, res, next) => {
+    const { statusCode = 500, message = 'Something went wrong!' } = err;
+    res.status(statusCode).send(message);
+})
 
 app.listen(3000, () => {
     console.log(`Listening on port 3000`);
