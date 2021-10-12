@@ -6,13 +6,9 @@ const localStrategy = require("passport-local");
 const session = require("express-session");
 const flash = require("connect-flash");
 const UserModel = require("./models/User");
-<<<<<<< HEAD
 const WrapAsync = require('./utils/WrapAsync');
 const AppError = require('./utils/AppError');
-
-=======
 const ejsMate = require("ejs-mate");
->>>>>>> upstream/main
 mongoose.connect('mongodb://localhost:27017/matchUp')
     .then(() => console.log("Connected to MongoDB"))
     .catch((err) => console.log(err));
