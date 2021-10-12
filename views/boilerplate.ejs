@@ -10,30 +10,47 @@
     <title>matchUp</title>
 </head>
 
+
+
 <body class="d-flex flex-column vh-100">
-    <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">matchUp</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
-                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                <div class="navbar-nav ms-auto">
-                    <% if(!currentUser) { %>
-                        <a class="nav-link active" href="/login">Login</a>
-                        <a class="nav-link active" href="/register">Register</a>
-                        <% } else { %>
-                            <a class="nav-link active" href="/logout">Logout</a>
-                            <% } %>
-                </div>
+            <a class="navbar-brand" href="/">
+                <h2 class="text-light">matchUp</h2>
+            </a>
+            <div class="collapse navbar-collapse">
+
+                <% if(!currentUser) { %>
+
+                    <form class="d-flex ms-auto" novalidate action="/login" method="POST">
+                        <input class="form-control me-2" type="text" placeholder="Username" name="username" required>
+                        <div class="valid-feedback"></div>
+
+                        <input class="form-control me-2" type="password" placeholder="Password" name="password"
+                            required>
+                        <div class="valid-feedback"></div>
+
+                        <button class="btn btn-success">Login</button>
+                    </form>
+                    <% } else { %>
+
+                        <div class="navbar-nav ms-auto">
+                            <a class="nav-link inline active text-light" href="/dashboard">Dashboard</a>
+                            <a class="nav-link inline active text-light" href="/logout">Logout</a>
+                        </div>
+
+                        <% } %>
             </div>
         </div>
     </nav>
+
+
+
     <main class="container mt-5">
         <%- body %>
     </main>
-    <footer class="footer bg-dark mt-auto">
+    <footer class="footer bg-dark mt-5">
         <div class="container py-3">
             <span class="text-light">&copy;matchUp</span>
         </div>

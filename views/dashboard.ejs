@@ -8,3 +8,71 @@
         <% } %>
 
             <h1>This is your personalised profile page</h1>
+
+
+            <div class="row mt-5">
+                <div class="col-6 ms-auto">
+
+                    <% if(users.length <=1) { %>
+                        <h3 class="text-center">Sorry! No profiles to show</h3>
+                        <% } else { %>
+
+                            <h3 class="text-center">Profiles you may be interested in ..</h3>
+                            <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                                <div style="max-height: 900px" class="carousel-inner">
+                                    <% users.forEach((user, i)=> {%>
+                                        <% if(!( user._id.valueOf()===currentUser._id.valueOf())) { %>
+                                            <% console.log(user) %>
+                                                <div
+                                                    class="carousel-item <%= (i==0 && (user._id.valueOf()!==currentUser._id.valueOf()))?'active':
+                                                     (i!==0 && (users[0]._id.valueOf()!==currentUser._id.valueOf()?'': 
+                                                     ((i==0 && user._id.valueOf()===currentUser._id.valueOf()?'':
+                                                     (i===1 && users[0]._id.valueOf()===currentUser._id.valueOf()?'active':''))) )) %> ">
+                                                    <div class="card d-block w-100">
+                                                        <img src=<%=user.image%> style="max-height: 500px"
+                                                        class="card-img-top"
+                                                        alt="">
+                                                        <div class="card-body">
+                                                            <h5 class="card-title">
+                                                                <%= user.username %>
+                                                            </h5>
+                                                            <p class="card-text">User's profile description goes
+                                                                here
+                                                            </p>
+                                                            <ul class="list-group list-group-flush">
+                                                                <li class="list-group-item">
+                                                                    <%= user.email %>
+                                                                </li>
+                                                                <li class="list-group-item">
+                                                                    <%= user.city %>
+                                                                </li>
+                                                            </ul>
+                                                            <div class="text-center card-body">
+                                                                <a href="/" class="card-link">Card link</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <% } %>
+                                                    <% }) %>
+                                </div>
+                                <button class="carousel-control-prev" type="button"
+                                    data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button"
+                                    data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+
+
+                            <% } %>
+
+
+                </div>
+            </div>
+
+            <% console.log(currentUser._id.valueOf()) %>
