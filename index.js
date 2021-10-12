@@ -48,10 +48,6 @@ app.get("/", (req, res) => {
     res.render("home.ejs");
 })
 
-app.get("/login", (req, res) => {
-    res.render("login.ejs");
-})
-
 app.get("/dashboard", (req, res) => {
     if (!req.isAuthenticated()) {
         req.flash("error", "You need to be signed in!");
@@ -66,7 +62,7 @@ app.get("/logout", (req, res) => {
     res.redirect("/");
 })
 
-app.post("/login", passport.authenticate("local", { failureFlash: true, failureRedirect: "/login" }), (req, res) => {
+app.post("/login", passport.authenticate("local", { failureFlash: true, failureRedirect: "/" }), (req, res) => {
     req.flash("success", "Welcome back!");
     res.redirect("/dashboard");
 })
@@ -84,7 +80,7 @@ app.post("/register", async (req, res) => {
     }
     catch (err) {
         req.flash("error", err.message);
-        res.redirect("/register");
+        res.redirect("/");
     }
 });
 
