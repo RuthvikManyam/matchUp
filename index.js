@@ -52,10 +52,6 @@ app.get("/login", (req, res) => {
     res.render("login.ejs");
 })
 
-app.get("/register", (req, res) => {
-    res.render("register.ejs");
-})
-
 app.get("/dashboard", (req, res) => {
     if (!req.isAuthenticated()) {
         req.flash("error", "You need to be signed in!");
