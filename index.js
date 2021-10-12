@@ -48,12 +48,16 @@ app.get("/", (req, res) => {
     res.render("home.ejs");
 })
 
-app.get("/dashboard", (req, res) => {
+app.get("/dashboard", async (req, res) => {
     if (!req.isAuthenticated()) {
         req.flash("error", "You need to be signed in!");
-        return res.redirect("/login");
+        return res.redirect("/");
     }
-    res.render("dashboard.ejs");
+    else {
+        const users = await UserModel.find({});
+        res.render("dashboard.ejs", { users });
+    }
+
 })
 
 app.get("/logout", (req, res) => {
@@ -69,8 +73,8 @@ app.post("/login", passport.authenticate("local", { failureFlash: true, failureR
 
 app.post("/register", async (req, res) => {
     try {
-        const { email, username, password, city } = req.body;
-        const user = new UserModel({ email, username, city });
+        const { email, username, password, city, image } = req.body;
+        const user = new UserModel({ email, username, city, image });
         const registeredUser = await UserModel.register(user, password);
         req.login(registeredUser, error => {
             if (error) return next(error);

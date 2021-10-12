@@ -11,6 +11,10 @@ const userSchema = new Schema({
     city: {
         type: String,
         required: true
+    },
+    image: {
+        type: String,
+        required: true
     }
 });
 userSchema.plugin(passportLocalMongoose);
