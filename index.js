@@ -97,8 +97,12 @@ app.post("/register", async (req, res) => {
 
 
 
-app.post("/friend/add", (req, res) => { //ensure authenticated
-    console.log(req.body);
+app.post("/:id/add", async (req, res) => { //ensure authenticated
+    const user1 = req.user;
+    const user2 = await UserModel.findById(req.params.id);
+    // console.log(req.params.id);
+    console.log(user1);
+    console.log(user2);
 })
 
 

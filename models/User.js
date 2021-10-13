@@ -17,13 +17,13 @@ const userSchema = new Schema({
         required: true
     },
     sentRequests: [{
-        username: { type: String, default: '' }
+        id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     }],
     friendRequests: [{
-        userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     }],
     friends: [{
-        friendId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     }]
 });
 userSchema.plugin(passportLocalMongoose);
