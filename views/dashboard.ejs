@@ -44,7 +44,13 @@
                                                         </li>
                                                     </ul>
                                                     <div class="text-center card-body">
-                                                        <a href="/" class="card-link">Card link</a>
+                                                        <form method="POST" action="/friend/add">
+                                                            <input type="hidden" name="user1_id"
+                                                                value="<%= currentUser._id.valueOf() %> ">
+                                                            <input type="hidden" name="user2_id"
+                                                                value="<%= user._id.valueOf() %> ">
+                                                            <button>matchUp</button>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
@@ -69,5 +75,3 @@
 
                 </div>
             </div>
-
-            <% console.log(currentUser._id.valueOf()) %>

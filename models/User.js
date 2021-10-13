@@ -15,7 +15,17 @@ const userSchema = new Schema({
     image: {
         type: String,
         required: true
-    }
+    },
+    sentRequests: [{
+        username: { type: String, default: '' }
+    }],
+    friendRequests: [{
+        userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    }],
+    friends: [{
+        friendId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    }]
 });
 userSchema.plugin(passportLocalMongoose);
+
 module.exports = mongoose.model("User", userSchema);

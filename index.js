@@ -1,4 +1,5 @@
 const express = require("express");
+const async = require("async");
 const path = require("path");
 const mongoose = require("mongoose");
 const passport = require("passport");
@@ -93,6 +94,13 @@ app.post("/register", async (req, res) => {
         res.redirect("/");
     }
 });
+
+
+
+app.post("/friend/add", (req, res) => { //ensure authenticated
+    console.log(req.body);
+})
+
 
 app.listen(3000, () => {
     console.log(`Listening on port 3000`);

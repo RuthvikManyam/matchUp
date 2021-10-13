@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/hansel-sequeira/matchUp#readme",
   "dependencies": {
+    "async": "^3.2.1",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^4.6.0",
     "connect-mongodb-session": "^3.1.1",
@@ -29,6 +30,7 @@
     "express-session": "^1.17.2",
     "joi": "^17.4.2",
     "mongoose": "^6.0.10",
+    "mongoose-friends": "^0.2.5",
     "nodemon": "^2.0.13",
     "passport": "^0.5.0",
     "passport-local": "^1.0.0",
