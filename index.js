@@ -55,7 +55,13 @@ app.get("/dashboard", async (req, res) => {
     }
     else {
         const users = await UserModel.find({});
-        res.render("dashboard.ejs", { users });
+        const potentialMatchUps = [];
+        for (let user of users) {
+            if (req.user._id.valueOf() !== user._id.valueOf()) {
+                potentialMatchUps.push(user);
+            }
+        }
+        res.render("dashboard.ejs", { users, potentialMatchUps });
     }
 
 })
