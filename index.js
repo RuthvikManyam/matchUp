@@ -100,7 +100,14 @@ app.post("/register", async (req, res) => {
 app.post("/:id/add", async (req, res) => { //ensure authenticated
     const user1 = req.user;
     const user2 = await UserModel.findById(req.params.id);
-    // console.log(req.params.id);
+    await UserModel.updateOne(
+        { _id: user2._id },
+        { $push: { friendRequests: user1._id } }
+    );
+    await UserModel.updateOne(
+        { _id: user1._id },
+        { $push: { sentRequests: user2._id } }
+    );
     console.log(user1);
     console.log(user2);
 })
