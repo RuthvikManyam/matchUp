@@ -58,24 +58,18 @@ app.get("/dashboard", async (req, res) => {
         const users = await UserModel.find({});
         const potentialMatchUps = [];
         for (let user of users) {
-            if (req.user._id.valueOf() !== user._id.valueOf()) {
+            if ((req.user._id.valueOf() !== user._id.valueOf()) &&
+                !(req.user.friendRequests.includes(user._id)) &&
+                !(req.user.sentRequests.includes(user._id)) &&
+                !(req.user.friends.includes(user._id))) {
                 potentialMatchUps.push(user);
             }
         }
+        console.log(potentialMatchUps);
+        console.log(req.user);
         await req.user.populate("friendRequests");
         await req.user.populate("sentRequests");
         await req.user.populate("friends");
-        // const friendRequests = [];
-        // console.log(req.user.friendRequestIDs);
-        // for (let friendRequestID of req.user.friendRequestIDs) {
-        //     const extractedID = friendRequestID._id.toString();
-        //     const temp = await UserModel.findById(extractedID);
-        //     console.log("temp: ", temp);
-        //friendRequests.push(temp);
-        //}
-        //console.log(friendRequests);
-        // const sentRequests = 
-        // const friends =
         res.render("dashboard.ejs", { users, potentialMatchUps });
     }
 
@@ -141,7 +135,6 @@ app.post("/:id/accept", async (req, res) => {
         user2._id, { $pull: { sentRequests: user1._id } });
     await UserModel.findByIdAndUpdate(
         user1._id, { $pull: { friendRequests: user2._id } });
-    console.log("user1", user1); console.log("user2", user2);
     req.flash("success", "You have successfully matched up!");
     res.redirect("/dashboard");
 })
