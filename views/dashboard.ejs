@@ -18,7 +18,7 @@
                         <h3 class="text-center">matchUp requests you have:</h3>
                         <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
                             <div style="max-height: 900px" class="carousel-inner">
-                                <% potentialMatchUps.forEach((user, i)=> {%>
+                                <% currentUser.friendRequests.forEach((user, i)=> {%>
                                     <div class="carousel-item <%= (i==0?'active':'') %> ">
                                         <div class="card d-block w-100">
                                             <img src=<%=user.image%> style="max-height: 500px"
@@ -41,11 +41,11 @@
                                                 </ul>
                                                 <div class="text-center card-body">
                                                     <form style="display: inline" method="POST"
-                                                        action="/<%=user._id%>/add">
+                                                        action="/<%=user._id%>/accept">
                                                         <button class="btn btn-success">Accept matchUp</button>
                                                     </form>
                                                     <form style="display: inline" method="POST"
-                                                        action="/<%=user._id%>/add">
+                                                        action="/<%=user._id%>/reject">
                                                         <button class="btn btn-danger">Reject matchUp</button>
                                                     </form>
                                                 </div>

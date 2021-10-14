@@ -64,7 +64,7 @@ app.get("/dashboard", async (req, res) => {
         }
         await req.user.populate("friendRequests");
         await req.user.populate("sentRequests");
-        console.log(req.user);
+        await req.user.populate("friends");
         // const friendRequests = [];
         // console.log(req.user.friendRequestIDs);
         // for (let friendRequestID of req.user.friendRequestIDs) {
@@ -123,6 +123,26 @@ app.post("/:id/add", async (req, res) => { //ensure authenticated
         { $push: { sentRequests: user2._id } }
     );
     req.flash("success", "Sent a matchUp request!");
+    res.redirect("/dashboard");
+})
+
+app.post("/:id/accept", async (req, res) => {
+    const user1 = req.user;
+    const user2 = await UserModel.findById(req.params.id);
+    await UserModel.updateOne(
+        { _id: user2._id },
+        { $push: { friends: user1._id } }
+    );
+    await UserModel.updateOne(
+        { _id: user1._id },
+        { $push: { friends: user2._id } }
+    );
+    await UserModel.findByIdAndUpdate(
+        user2._id, { $pull: { sentRequests: user1._id } });
+    await UserModel.findByIdAndUpdate(
+        user1._id, { $pull: { friendRequests: user2._id } });
+    console.log("user1", user1); console.log("user2", user2);
+    req.flash("success", "You have successfully matched up!");
     res.redirect("/dashboard");
 })
 
