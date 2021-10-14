@@ -12,9 +12,65 @@
             </h1>
 
 
-            <div class="row mt-5">
-                <div class="col-6 ms-auto">
+            <div class="row my-5">
+                <div class="col-4">
+                    <% if(currentUser.friendRequests.length>= 1) { %>
+                        <h3 class="text-center">matchUp requests you have:</h3>
+                        <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                            <div style="max-height: 900px" class="carousel-inner">
+                                <% potentialMatchUps.forEach((user, i)=> {%>
+                                    <div class="carousel-item <%= (i==0?'active':'') %> ">
+                                        <div class="card d-block w-100">
+                                            <img src=<%=user.image%> style="max-height: 500px"
+                                            class="card-img-top"
+                                            alt="">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    <%= user.username %>
+                                                </h5>
+                                                <p class="card-text">User's profile description goes
+                                                    here
+                                                </p>
+                                                <ul class="list-group list-group-flush">
+                                                    <li class="list-group-item">
+                                                        <%= user.email %>
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        <%= user.city %>
+                                                    </li>
+                                                </ul>
+                                                <div class="text-center card-body">
+                                                    <form style="display: inline" method="POST"
+                                                        action="/<%=user._id%>/add">
+                                                        <button class="btn btn-success">Accept matchUp</button>
+                                                    </form>
+                                                    <form style="display: inline" method="POST"
+                                                        action="/<%=user._id%>/add">
+                                                        <button class="btn btn-danger">Reject matchUp</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                            </div>
+                            <button class="carousel-control-prev" type="button"
+                                data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next" type="button"
+                                data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                        <% } %>
+                </div>
 
+
+
+                <div class="col-6 ms-auto">
                     <% if(users.length <=1) { %>
                         <h3 class="text-center">Sorry! No profiles to show</h3>
                         <% } else { %>
@@ -46,7 +102,8 @@
                                                     <div class="text-center card-body">
 
                                                         <form method="POST" action="/<%=user._id%>/add">
-                                                            <button>matchUp</button>
+                                                            <button class="btn btn-primary">Send matchUp
+                                                                Request</button>
                                                         </form>
                                                     </div>
                                                 </div>
@@ -68,7 +125,5 @@
 
 
                             <% } %>
-
-
                 </div>
             </div>

@@ -16,15 +16,9 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    sentRequests: [{
-        id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    }],
-    friendRequests: [{
-        id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    }],
-    friends: [{
-        id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    }]
+    sentRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    friendRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 });
 userSchema.plugin(passportLocalMongoose);
 

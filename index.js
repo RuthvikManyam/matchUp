@@ -62,6 +62,20 @@ app.get("/dashboard", async (req, res) => {
                 potentialMatchUps.push(user);
             }
         }
+        await req.user.populate("friendRequests");
+        await req.user.populate("sentRequests");
+        console.log(req.user);
+        // const friendRequests = [];
+        // console.log(req.user.friendRequestIDs);
+        // for (let friendRequestID of req.user.friendRequestIDs) {
+        //     const extractedID = friendRequestID._id.toString();
+        //     const temp = await UserModel.findById(extractedID);
+        //     console.log("temp: ", temp);
+        //friendRequests.push(temp);
+        //}
+        //console.log(friendRequests);
+        // const sentRequests = 
+        // const friends =
         res.render("dashboard.ejs", { users, potentialMatchUps });
     }
 
@@ -108,8 +122,8 @@ app.post("/:id/add", async (req, res) => { //ensure authenticated
         { _id: user1._id },
         { $push: { sentRequests: user2._id } }
     );
-    console.log(user1);
-    console.log(user2);
+    req.flash("success", "Sent a matchUp request!");
+    res.redirect("/dashboard");
 })
 
 
