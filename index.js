@@ -140,6 +140,17 @@ app.post("/:id/accept", async (req, res) => {
 })
 
 
+app.post("/:id/reject", async (req, res) => {
+    const user1 = req.user;
+    const user2 = await UserModel.findById(req.params.id);
+    await UserModel.findByIdAndUpdate(
+        user2._id, { $pull: { sentRequests: user1._id } });
+    await UserModel.findByIdAndUpdate(
+        user1._id, { $pull: { friendRequests: user2._id } });
+    req.flash("info", "matchUp rejected!");
+    res.redirect("/dashboard");
+})
+
 app.listen(3000, () => {
     console.log(`Listening on port 3000`);
 })
