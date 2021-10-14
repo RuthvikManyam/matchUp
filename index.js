@@ -1,13 +1,20 @@
+if (process.env.NODE_ENV !== "production") {
+    require("dotenv").config();
+}
+
 const express = require("express");
-const async = require("async");
 const path = require("path");
 const mongoose = require("mongoose");
+const { storage } = require("./cloudinary/index.js");
+const multer = require("multer");
+const upload = multer({ storage });
 const passport = require("passport");
 const localStrategy = require("passport-local");
 const session = require("express-session");
 const flash = require("connect-flash");
 const UserModel = require("./models/User");
 const ejsMate = require("ejs-mate");
+const { isLoggedIn } = require("./middleware.js");
 mongoose.connect('mongodb://localhost:27017/matchUp')
     .then(() => console.log("Connected to MongoDB"))
     .catch((err) => console.log(err));
@@ -49,33 +56,26 @@ app.get("/", (req, res) => {
     res.render("home.ejs");
 })
 
-app.get("/dashboard", async (req, res) => {
-    if (!req.isAuthenticated()) {
-        req.flash("error", "You need to be signed in!");
-        return res.redirect("/");
-    }
-    else {
-        const users = await UserModel.find({});
-        const potentialMatchUps = [];
-        for (let user of users) {
-            if ((req.user._id.valueOf() !== user._id.valueOf()) &&
-                !(req.user.friendRequests.includes(user._id)) &&
-                !(req.user.sentRequests.includes(user._id)) &&
-                !(req.user.friends.includes(user._id))) {
-                potentialMatchUps.push(user);
-            }
+app.get("/dashboard", isLoggedIn, async (req, res) => {
+    const users = await UserModel.find({});
+    const potentialMatchUps = [];
+    for (let user of users) {
+        if ((req.user._id.valueOf() !== user._id.valueOf()) &&
+            !(req.user.friendRequests.includes(user._id)) &&
+            !(req.user.sentRequests.includes(user._id)) &&
+            !(req.user.friends.includes(user._id))) {
+            potentialMatchUps.push(user);
         }
-        console.log(potentialMatchUps);
-        console.log(req.user);
-        await req.user.populate("friendRequests");
-        await req.user.populate("sentRequests");
-        await req.user.populate("friends");
-        res.render("dashboard.ejs", { users, potentialMatchUps });
     }
-
+    console.log(potentialMatchUps);
+    console.log(req.user);
+    await req.user.populate("friendRequests");
+    await req.user.populate("sentRequests");
+    await req.user.populate("friends");
+    res.render("dashboard.ejs", { users, potentialMatchUps });
 })
 
-app.get("/logout", (req, res) => {
+app.get("/logout", isLoggedIn, (req, res) => {
     req.logout();
     req.flash("success", "Successfully logged out!");
     res.redirect("/");
@@ -86,8 +86,10 @@ app.post("/login", passport.authenticate("local", { failureFlash: true, failureR
     res.redirect("/dashboard");
 })
 
-app.post("/register", async (req, res) => {
+//ensure authentication
+app.post("/register", isLoggedIn, upload.single("image"), async (req, res) => {
     try {
+        console.log(req.file);
         const { email, username, password, city, image } = req.body;
         const user = new UserModel({ email, username, city, image });
         const registeredUser = await UserModel.register(user, password);
@@ -103,9 +105,7 @@ app.post("/register", async (req, res) => {
     }
 });
 
-
-
-app.post("/:id/add", async (req, res) => { //ensure authenticated
+app.post("/:id/add", isLoggedIn, async (req, res) => {
     const user1 = req.user;
     const user2 = await UserModel.findById(req.params.id);
     await UserModel.updateOne(
@@ -120,7 +120,7 @@ app.post("/:id/add", async (req, res) => { //ensure authenticated
     res.redirect("/dashboard");
 })
 
-app.post("/:id/accept", async (req, res) => {
+app.post("/:id/accept", isLoggedIn, async (req, res) => {
     const user1 = req.user;
     const user2 = await UserModel.findById(req.params.id);
     await UserModel.updateOne(
@@ -140,7 +140,8 @@ app.post("/:id/accept", async (req, res) => {
 })
 
 
-app.post("/:id/reject", async (req, res) => {
+//ensure authentication
+app.post("/:id/reject", isLoggedIn, async (req, res) => {
     const user1 = req.user;
     const user2 = await UserModel.findById(req.params.id);
     await UserModel.findByIdAndUpdate(
