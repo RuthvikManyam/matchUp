@@ -64,7 +64,6 @@ app.use((req, res, next) => {
 })
 
 app.get("/", (req, res) => {
-    console.log(req.session.id);
     req.session.isAuth = true;
     res.render("home.ejs");
 })
@@ -80,8 +79,6 @@ app.get("/dashboard", isLoggedIn, WrapAsync(async (req, res) => {
             potentialMatchUps.push(user);
         }
     }
-    console.log(potentialMatchUps);
-    console.log(req.user);
     await req.user.populate("friendRequests");
     await req.user.populate("sentRequests");
     await req.user.populate("friends");
@@ -119,14 +116,6 @@ app.post("/register", upload.single("image"), WrapAsync(async (req, res) => {
     }
 }));
 
-app.all('*', (req, res, next) => {
-    next(new AppError('Page Not Found', 404))
-})
-
-app.use((err, req, res, next) => {
-    const { statusCode = 500, message = 'Something went wrong!' } = err;
-    res.status(statusCode).send(message);
-})
 
 app.post("/:id/add", isLoggedIn, async (req, res) => {
     const user1 = req.user;
@@ -172,6 +161,15 @@ app.post("/:id/reject", isLoggedIn, async (req, res) => {
         user1._id, { $pull: { friendRequests: user2._id } });
     req.flash("info", "matchUp rejected!");
     res.redirect("/dashboard");
+})
+
+app.all('*', (req, res, next) => {
+    next(new AppError('Page Not Found', 404))
+})
+
+app.use((err, req, res, next) => {
+    const { statusCode = 500, message = 'Something went wrong!' } = err;
+    res.status(statusCode).send(message);
 })
 
 app.listen(3000, () => {
