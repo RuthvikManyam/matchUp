@@ -87,11 +87,12 @@ app.post("/login", passport.authenticate("local", { failureFlash: true, failureR
 })
 
 //ensure authentication
-app.post("/register", isLoggedIn, upload.single("image"), async (req, res) => {
+app.post("/register", upload.single("image"), async (req, res) => {
     try {
         console.log(req.file);
-        const { email, username, password, city, image } = req.body;
-        const user = new UserModel({ email, username, city, image });
+        const { email, username, password, city } = req.body;
+        const { path, filename } = req.file;
+        const user = new UserModel({ email, username, city, image: { url: path, filename: filename } });
         const registeredUser = await UserModel.register(user, password);
         req.login(registeredUser, error => {
             if (error) return next(error);
@@ -140,7 +141,6 @@ app.post("/:id/accept", isLoggedIn, async (req, res) => {
 })
 
 
-//ensure authentication
 app.post("/:id/reject", isLoggedIn, async (req, res) => {
     const user1 = req.user;
     const user2 = await UserModel.findById(req.params.id);

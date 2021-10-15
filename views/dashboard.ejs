@@ -23,7 +23,7 @@
                                     <% potentialMatchUps.forEach((user, i)=> {%>
                                         <div class="carousel-item <%= (i==0?'active':'') %> ">
                                             <div class="card d-block w-100">
-                                                <img src=<%=user.image%> style="max-height: 500px"
+                                                <img src=<%=user.image.url%> style="max-height: 500px"
                                                 class="card-img-top"
                                                 alt="">
                                                 <div class="card-body">
@@ -81,7 +81,7 @@
                                 <% currentUser.friendRequests.forEach((user, i)=> {%>
                                     <div class="carousel-item <%= (i==0?'active':'') %> ">
                                         <div class="card d-block w-100">
-                                            <img src=<%=user.image%> style="max-height: 500px"
+                                            <img src=<%=user.image.url%> style="max-height: 500px"
                                             class="card-img-top"
                                             alt="">
                                             <div class="card-body">
