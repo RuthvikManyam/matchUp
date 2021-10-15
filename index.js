@@ -11,15 +11,25 @@ const upload = multer({ storage });
 const passport = require("passport");
 const localStrategy = require("passport-local");
 const session = require("express-session");
+const MongoDBSession = require('connect-mongodb-session')(session);
 const flash = require("connect-flash");
 const UserModel = require("./models/User");
+const WrapAsync = require('./utils/WrapAsync');
+const AppError = require('./utils/AppError');
 const ejsMate = require("ejs-mate");
+const mongoURI = 'mongodb://localhost:27017/matchUp'
+mongoose.connect(mongoURI)
 const { isLoggedIn } = require("./middleware.js");
 mongoose.connect('mongodb://localhost:27017/matchUp')
     .then(() => console.log("Connected to MongoDB"))
     .catch((err) => console.log(err));
 
 const app = express();
+
+const store = new MongoDBSession({
+    uri: mongoURI,
+    collection: 'mysessions'
+})
 
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
@@ -34,7 +44,8 @@ const sessionConfig = {
         httpOnly: true,
         expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
         maxAge: 1000 * 60 * 60 * 24 * 7,
-    }
+    },
+    store: store,
 }
 
 app.use(session(sessionConfig));
@@ -53,10 +64,12 @@ app.use((req, res, next) => {
 })
 
 app.get("/", (req, res) => {
+    console.log(req.session.id);
+    req.session.isAuth = true;
     res.render("home.ejs");
 })
 
-app.get("/dashboard", isLoggedIn, async (req, res) => {
+app.get("/dashboard", isLoggedIn, WrapAsync(async (req, res) => {
     const users = await UserModel.find({});
     const potentialMatchUps = [];
     for (let user of users) {
@@ -73,7 +86,8 @@ app.get("/dashboard", isLoggedIn, async (req, res) => {
     await req.user.populate("sentRequests");
     await req.user.populate("friends");
     res.render("dashboard.ejs", { users, potentialMatchUps });
-})
+}))
+
 
 app.get("/logout", isLoggedIn, (req, res) => {
     req.logout();
@@ -86,16 +100,20 @@ app.post("/login", passport.authenticate("local", { failureFlash: true, failureR
     res.redirect("/dashboard");
 })
 
-//ensure authentication
-app.post("/register", upload.single("image"), async (req, res) => {
+app.post("/register", isLoggedIn, upload.single("image"), WrapAsync(async (req, res) => {
     try {
-        console.log(req.file);
         const { email, username, password, city } = req.body;
         const { path, filename } = req.file;
+        let user = await UserModel.findOne({ email });
+        if (user) {
+            req.flash("error", "A user with that email ID already exists!");
+            res.redirect("/");
+        }
         const user = new UserModel({ email, username, city, image: { url: path, filename: filename } });
         const registeredUser = await UserModel.register(user, password);
-        req.login(registeredUser, error => {
+        req.login(registeredUser, async (error) => {
             if (error) return next(error);
+            await user.save();
             req.flash("success", "Successfully registered!");
             res.redirect("/dashboard");
         })
@@ -104,7 +122,16 @@ app.post("/register", upload.single("image"), async (req, res) => {
         req.flash("error", err.message);
         res.redirect("/");
     }
-});
+}));
+
+app.all('*', (req, res, next) => {
+    next(new AppError('Page Not Found', 404))
+})
+
+app.use((err, req, res, next) => {
+    const { statusCode = 500, message = 'Something went wrong!' } = err;
+    res.status(statusCode).send(message);
+})
 
 app.post("/:id/add", isLoggedIn, async (req, res) => {
     const user1 = req.user;
