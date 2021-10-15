@@ -97,7 +97,7 @@ app.post("/login", passport.authenticate("local", { failureFlash: true, failureR
     res.redirect("/dashboard");
 })
 
-app.post("/register", upload.single("image"), WrapAsync(async (req, res) => {
+app.post("/register", upload.single("image"), WrapAsync(async (req, res, next) => {
     try {
         const { email, username, password, city } = req.body;
         const { path, filename } = req.file;
@@ -111,15 +111,15 @@ app.post("/register", upload.single("image"), WrapAsync(async (req, res) => {
         })
     }
     catch (err) {
-        req.flash("error", err.message);
-        res.redirect("/");
+        next(err);
     }
 }));
 
 
-app.post("/:id/add", isLoggedIn, async (req, res) => {
+app.post("/:id/add", isLoggedIn, WrapAsync(async (req, res) => {
     const user1 = req.user;
     const user2 = await UserModel.findById(req.params.id);
+    console.log(req.params.id);
     await UserModel.updateOne(
         { _id: user2._id },
         { $push: { friendRequests: user1._id } }
@@ -130,9 +130,9 @@ app.post("/:id/add", isLoggedIn, async (req, res) => {
     );
     req.flash("success", "Sent a matchUp request!");
     res.redirect("/dashboard");
-})
+}))
 
-app.post("/:id/accept", isLoggedIn, async (req, res) => {
+app.post("/:id/accept", isLoggedIn, WrapAsync(async (req, res) => {
     const user1 = req.user;
     const user2 = await UserModel.findById(req.params.id);
     await UserModel.updateOne(
@@ -149,27 +149,36 @@ app.post("/:id/accept", isLoggedIn, async (req, res) => {
         user1._id, { $pull: { friendRequests: user2._id } });
     req.flash("success", "You have successfully matched up!");
     res.redirect("/dashboard");
-})
+}))
 
 
-app.post("/:id/reject", isLoggedIn, async (req, res) => {
+app.post("/:id/reject", isLoggedIn, WrapAsync(async (req, res) => {
     const user1 = req.user;
     const user2 = await UserModel.findById(req.params.id);
     await UserModel.findByIdAndUpdate(
         user2._id, { $pull: { sentRequests: user1._id } });
     await UserModel.findByIdAndUpdate(
         user1._id, { $pull: { friendRequests: user2._id } });
+    await UserModel.updateOne(
+        { _id: user2._id },
+        { $pull: { friends: user1._id } }
+    );
+    await UserModel.updateOne(
+        { _id: user1._id },
+        { $pull: { friends: user2._id } }
+    );
     req.flash("info", "matchUp rejected!");
     res.redirect("/dashboard");
-})
+}))
 
 app.all('*', (req, res, next) => {
     next(new AppError('Page Not Found', 404))
 })
 
 app.use((err, req, res, next) => {
-    const { statusCode = 500, message = 'Something went wrong!' } = err;
-    res.status(statusCode).send(message);
+    const { statusCode = 500 } = err;
+    if (!err.message) err.message("Something went wrong!");
+    res.status(statusCode).render("error.ejs", { err });
 })
 
 app.listen(3000, () => {

@@ -1,0 +1,10 @@
+<% layout("boilerplate.ejs") %>
+
+    <div class="alert alert-danger col-6 offset-3" style="overflow-wrap: break-word;" role="alert">
+        <h4 class="alert-heading">
+            <%= err.message %>
+        </h4>
+        <p>
+            <%= err.stack %>
+        </p>
+    </div>
