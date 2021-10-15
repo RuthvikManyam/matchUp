@@ -1,6 +1,13 @@
+if (process.env.NODE_ENV !== "production") {
+    require("dotenv").config();
+}
+
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
+const { storage } = require("./cloudinary/index.js");
+const multer = require("multer");
+const upload = multer({ storage });
 const passport = require("passport");
 const localStrategy = require("passport-local");
 const session = require("express-session");
@@ -12,6 +19,8 @@ const AppError = require('./utils/AppError');
 const ejsMate = require("ejs-mate");
 const mongoURI = 'mongodb://localhost:27017/matchUp'
 mongoose.connect(mongoURI)
+const { isLoggedIn } = require("./middleware.js");
+mongoose.connect('mongodb://localhost:27017/matchUp')
     .then(() => console.log("Connected to MongoDB"))
     .catch((err) => console.log(err));
 
@@ -60,19 +69,27 @@ app.get("/", (req, res) => {
     res.render("home.ejs");
 })
 
-app.get("/dashboard", WrapAsync (async (req, res) => {
-    if (!req.isAuthenticated()) {
-        req.flash("error", "You need to be signed in!");
-        return res.redirect("/");
+app.get("/dashboard", isLoggedIn, WrapAsync(async (req, res) => {
+    const users = await UserModel.find({});
+    const potentialMatchUps = [];
+    for (let user of users) {
+        if ((req.user._id.valueOf() !== user._id.valueOf()) &&
+            !(req.user.friendRequests.includes(user._id)) &&
+            !(req.user.sentRequests.includes(user._id)) &&
+            !(req.user.friends.includes(user._id))) {
+            potentialMatchUps.push(user);
+        }
     }
-    else {
-        const users = await UserModel.find({});
-        res.render("dashboard.ejs", { users });
-    }
-
+    console.log(potentialMatchUps);
+    console.log(req.user);
+    await req.user.populate("friendRequests");
+    await req.user.populate("sentRequests");
+    await req.user.populate("friends");
+    res.render("dashboard.ejs", { users, potentialMatchUps });
 }))
 
-app.get("/logout", (req, res) => {
+
+app.get("/logout", isLoggedIn, (req, res) => {
     req.logout();
     req.flash("success", "Successfully logged out!");
     res.redirect("/");
@@ -83,8 +100,9 @@ app.post("/login", passport.authenticate("local", { failureFlash: true, failureR
     res.redirect("/dashboard");
 })
 
-app.post("/register", WrapAsync( async (req, res) => {
+app.post("/register", isLoggedIn, upload.single("image"), WrapAsync(async (req, res) => {
     try {
+        console.log(req.file);
         const { email, username, password, city, image } = req.body;
         let user = await UserModel.findOne({email});
         if(user){
@@ -113,6 +131,53 @@ app.all('*', (req, res , next) => {
 app.use((err, req, res, next) => {
     const { statusCode = 500, message = 'Something went wrong!' } = err;
     res.status(statusCode).send(message);
+})
+
+app.post("/:id/add", isLoggedIn, async (req, res) => {
+    const user1 = req.user;
+    const user2 = await UserModel.findById(req.params.id);
+    await UserModel.updateOne(
+        { _id: user2._id },
+        { $push: { friendRequests: user1._id } }
+    );
+    await UserModel.updateOne(
+        { _id: user1._id },
+        { $push: { sentRequests: user2._id } }
+    );
+    req.flash("success", "Sent a matchUp request!");
+    res.redirect("/dashboard");
+})
+
+app.post("/:id/accept", isLoggedIn, async (req, res) => {
+    const user1 = req.user;
+    const user2 = await UserModel.findById(req.params.id);
+    await UserModel.updateOne(
+        { _id: user2._id },
+        { $push: { friends: user1._id } }
+    );
+    await UserModel.updateOne(
+        { _id: user1._id },
+        { $push: { friends: user2._id } }
+    );
+    await UserModel.findByIdAndUpdate(
+        user2._id, { $pull: { sentRequests: user1._id } });
+    await UserModel.findByIdAndUpdate(
+        user1._id, { $pull: { friendRequests: user2._id } });
+    req.flash("success", "You have successfully matched up!");
+    res.redirect("/dashboard");
+})
+
+
+//ensure authentication
+app.post("/:id/reject", isLoggedIn, async (req, res) => {
+    const user1 = req.user;
+    const user2 = await UserModel.findById(req.params.id);
+    await UserModel.findByIdAndUpdate(
+        user2._id, { $pull: { sentRequests: user1._id } });
+    await UserModel.findByIdAndUpdate(
+        user1._id, { $pull: { friendRequests: user2._id } });
+    req.flash("info", "matchUp rejected!");
+    res.redirect("/dashboard");
 })
 
 app.listen(3000, () => {

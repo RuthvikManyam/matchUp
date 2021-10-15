@@ -13,9 +13,13 @@ const userSchema = new Schema({
         required: true
     },
     image: {
-        type: String,
+        type: { url: String, filename: String },
         required: true
-    }
+    },
+    sentRequests: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    friendRequests: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 });
 userSchema.plugin(passportLocalMongoose);
+
 module.exports = mongoose.model("User", userSchema);
