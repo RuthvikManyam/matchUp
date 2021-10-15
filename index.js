@@ -4,6 +4,7 @@ if (process.env.NODE_ENV !== "production") {
 
 const express = require("express");
 const path = require("path");
+const Joi = require("joi");
 const mongoose = require("mongoose");
 const { storage } = require("./cloudinary/index.js");
 const multer = require("multer");
@@ -98,21 +99,32 @@ app.post("/login", passport.authenticate("local", { failureFlash: true, failureR
 })
 
 app.post("/register", upload.single("image"), WrapAsync(async (req, res, next) => {
-    try {
-        const { email, username, password, city } = req.body;
-        const { path, filename } = req.file;
-        const user = new UserModel({ email, username, city, image: { url: path, filename: filename } });
-        const registeredUser = await UserModel.register(user, password);
-        req.login(registeredUser, async (error) => {
-            if (error) return next(error);
-            await user.save();
-            req.flash("success", "Successfully registered!");
-            res.redirect("/dashboard");
-        })
+    const registrationValidationSchema = Joi.object({
+        email: Joi.string().required(),
+        username: Joi.string().required(),
+        password: Joi.string().required(),
+        city: Joi.string().required()
+    });
+
+    const { error } = registrationValidationSchema.validate(req.body);
+    if (error) {
+        const messages = error.details.map(elt => elt.message).join(",");
+        throw new AppError(messages, 400);
     }
-    catch (err) {
-        next(err);
+
+    const { email, username, password, city } = req.body;
+    if (!req.file) {
+        throw new AppError("File not uploaded", 400);
     }
+    const { path, filename } = req.file;
+    const user = new UserModel({ email, username, city, image: { url: path, filename: filename } });
+    const registeredUser = await UserModel.register(user, password);
+    req.login(registeredUser, async (error) => {
+        if (error) return next(error);
+        await user.save();
+        req.flash("success", "Successfully registered!");
+        res.redirect("/dashboard");
+    })
 }));
 
 
