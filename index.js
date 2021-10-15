@@ -100,15 +100,10 @@ app.post("/login", passport.authenticate("local", { failureFlash: true, failureR
     res.redirect("/dashboard");
 })
 
-app.post("/register", isLoggedIn, upload.single("image"), WrapAsync(async (req, res) => {
+app.post("/register", upload.single("image"), WrapAsync(async (req, res) => {
     try {
         const { email, username, password, city } = req.body;
         const { path, filename } = req.file;
-        let user = await UserModel.findOne({ email });
-        if (user) {
-            req.flash("error", "A user with that email ID already exists!");
-            res.redirect("/");
-        }
         const user = new UserModel({ email, username, city, image: { url: path, filename: filename } });
         const registeredUser = await UserModel.register(user, password);
         req.login(registeredUser, async (error) => {
