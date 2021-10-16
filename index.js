@@ -21,11 +21,14 @@ const ejsMate = require("ejs-mate");
 const mongoURI = 'mongodb://localhost:27017/matchUp'
 mongoose.connect(mongoURI)
 const { isLoggedIn } = require("./middleware.js");
+const Conversation = require("./models/Conversation.js");
+const Message = require("./models/Message.js");
 mongoose.connect('mongodb://localhost:27017/matchUp')
     .then(() => console.log("Connected to MongoDB"))
     .catch((err) => console.log(err));
 
 const app = express();
+const axios = require('axios');
 const server = require("http").createServer(app);
 const io = require("socket.io")(server, { cors: { origin: "*" } })
 
@@ -184,9 +187,74 @@ app.post("/:id/reject", isLoggedIn, WrapAsync(async (req, res) => {
     res.redirect("/dashboard");
 }))
 
-app.get("/chat", (req, res) => {
-    res.render("chat.ejs");
+
+app.post("/conversations", async (req, res, next) => {
+    const newConversation = new Conversation({
+        members: [req.body.senderId, req.body.receiverId]
+    });
+    try {
+        const savedConversation = await newConversation.save();
+        res.status(200).json(savedConversation);
+    }
+    catch (err) {
+        throw new AppError(err.message, 500);
+    }
 })
+
+app.get("/conversations/:userId", async (req, res) => {
+    try {
+        const conversation = await Conversation.find({
+            members: { $in: [req.params.userId.valueOf()] }
+        });
+        res.status(200).json(conversation);
+    } catch (err) {
+        throw new AppError(err.message, 500);
+    }
+})
+
+
+app.post("/messages", async (req, res) => {
+    const newMessage = new Message(req.body);
+    try {
+        const savedMessage = await newMessage.save();
+        res.status(200).send(savedMessage);
+    } catch (err) {
+        throw new AppError(err.message, 500);
+    }
+})
+
+app.get("/messages/:conversationId", async (req, res) => {
+    try {
+        const messages = await Message.find({
+            conversationId: req.params.conversationId
+        });
+        res.status(200).send(messages);
+    } catch (err) {
+        throw new AppError(err.message, 500);
+    }
+})
+
+
+app.get("/chat", async (req, res) => {
+    const getConversations = async () => {
+        try {
+            let conversations = await axios.get("http://localhost:3000/conversations/" + req.user._id);
+            conversations = conversations.data;
+            const conversationFriendDetails = [];
+            for (let conversation of conversations) {
+                const friendId = conversation.members.find(m => m !== req.user._id.valueOf());
+                const friendDetail = await UserModel.findById(friendId);
+                conversationFriendDetails.push(friendDetail);
+            }
+            res.render("chat.ejs", { conversations, conversationFriendDetails });
+        } catch (err) {
+            console.log(err);
+        }
+    };
+    getConversations();
+})
+
+
 
 app.all('*', (req, res, next) => {
     next(new AppError('Page Not Found', 404))

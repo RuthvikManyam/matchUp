@@ -169,31 +169,17 @@
     <h1>Chat Page</h1>
 
     <div class="messenger">
-
         <div class="chatMenu">
             <div class="chatMenuWrapper">
 
-                <div class="conversation">
-                    <img class="conversationImg" src="https://source.unsplash.com/collection/483251" alt="">
-                    <span class="conversationName">John Doe</span>
-                </div>
-                <div class="conversation">
-                    <img class="conversationImg" src="https://source.unsplash.com/collection/483251" alt="">
-                    <span class="conversationName">John Doe</span>
-                </div>
-                <div class="conversation">
-                    <img class="conversationImg" src="https://source.unsplash.com/collection/483251" alt="">
-                    <span class="conversationName">John Doe</span>
-                </div>
-                <div class="conversation">
-                    <img class="conversationImg" src="https://source.unsplash.com/collection/483251" alt="">
-                    <span class="conversationName">John Doe</span>
-                </div>
-                <div class="conversation">
-                    <img class="conversationImg" src="https://source.unsplash.com/collection/483251" alt="">
-                    <span class="conversationName">John Doe</span>
-                </div>
-
+                <% for( let index=0; index < conversations.length; index++ ) { %>
+                    <div class="conversation">
+                        <img class="conversationImg" src="<%= conversationFriendDetails[index].image.url%> " alt="">
+                        <span class="conversationName">
+                            <%= conversationFriendDetails[index].username %>
+                        </span>
+                    </div>
+                    <% } %>
             </div>
         </div>
 
@@ -205,7 +191,8 @@
                     <div class="message">
                         <div class="messageTop">
                             <img class="messageImg" src="https://source.unsplash.com/collection/483251" alt="">
-                            <p class="messageText">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Magnam eius
+                            <p class="messageText">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Magnam
+                                eius
                                 accusantium hic nemo, explicabo quod aliquam minus quaerat enim dolorem nostrum
                             </p>
                         </div>
@@ -337,7 +324,7 @@
         <input type="text" id="room-input">
         <button type="button" id="room-button">Join</button>
     </form> -->
-
+    <!-- 
     <script>
         const socket = io("http://localhost:3000");
         socket.on("connect", () => {
@@ -375,7 +362,7 @@
             div.textContent = message;
             document.getElementById("message-container").append(div);
         }
-    </script>
+    </script> -->
 </body>
 
 </html>
