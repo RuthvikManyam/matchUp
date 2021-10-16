@@ -26,6 +26,8 @@ mongoose.connect('mongodb://localhost:27017/matchUp')
     .catch((err) => console.log(err));
 
 const app = express();
+const server = require("http").createServer(app);
+const io = require("socket.io")(server, { cors: { origin: "*" } })
 
 const store = new MongoDBSession({
     uri: mongoURI,
@@ -131,7 +133,6 @@ app.post("/register", upload.single("image"), WrapAsync(async (req, res, next) =
 app.post("/:id/add", isLoggedIn, WrapAsync(async (req, res) => {
     const user1 = req.user;
     const user2 = await UserModel.findById(req.params.id);
-    console.log(req.params.id);
     await UserModel.updateOne(
         { _id: user2._id },
         { $push: { friendRequests: user1._id } }
@@ -183,6 +184,10 @@ app.post("/:id/reject", isLoggedIn, WrapAsync(async (req, res) => {
     res.redirect("/dashboard");
 }))
 
+app.get("/chat", (req, res) => {
+    res.render("chat.ejs");
+})
+
 app.all('*', (req, res, next) => {
     next(new AppError('Page Not Found', 404))
 })
@@ -193,6 +198,18 @@ app.use((err, req, res, next) => {
     res.status(statusCode).render("error.ejs", { err });
 })
 
-app.listen(3000, () => {
+server.listen(3000, () => {
     console.log(`Listening on port 3000`);
+})
+
+io.on("connection", (socket) => {
+    console.log("USER CONNECTED: " + socket.id);
+    socket.on("send-message", (message, room) => {
+        if (room === "") {
+            socket.broadcast.emit("receive-message", message);
+        }
+        else {
+            socket.to(room).emit("receive-message", message);
+        }
+    })
 })

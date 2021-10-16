@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <style>
+        body {
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            height: 100vh;
+            width: 90%;
+            max-width: 1200px;
+        }
+
+        #message-container {
+            height: 500px;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="message-container"></div>
+    <form action="" id="form">
+        <label for="message-input">Message</label>
+        <input type="text" id="message-input">
+        <button type="submit" id="send-button">Send</button>
+        <label for="room-input">Room</label>
+        <input type="text" id="room-input">
+        <button type="button" id="room-button">Join</button>
+    </form>
+
+    <script>
+        const socket = io("http://localhost:3000");
+        socket.on("connect", () => {
+            displayMessage(`You connected with ID: ${socket.id}`)
+        })
+
+        socket.on("receive-message", message => {
+            displayMessage(message);
+        })
+
+        const joinRoomButton = document.getElementById("room-button");
+        const messageInput = document.getElementById("message-input");
+        const roomInput = document.getElementById("room-input");
+        const form = document.getElementById("form");
+
+        form.addEventListener("submit", e => {
+            console.log("SUBMIT CLICKED")
+            e.preventDefault();
+            const message = messageInput.value;
+            const room = roomInput.value;
+
+            if (message === "") return;
+            displayMessage(message);
+            socket.emit("send-message", message, room);
+            messageInput.value = "";
+        })
+
+        joinRoomButton.addEventListener("click", () => {
+            console.log("JOIN ROOM CLICKED");
+            const room = roomInput.value;
+        })
+
+        function displayMessage(message) {
+            const div = document.createElement("div");
+            div.textContent = message;
+            document.getElementById("message-container").append(div);
+        }
+    </script>
+</body>
+
+</html>
