@@ -21,6 +21,10 @@ const userSchema = new Schema({
         ],
         required: true
     },
+    profileDescription: {
+        type: String,
+        required: true
+    },
     sentRequests: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     friendRequests: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]

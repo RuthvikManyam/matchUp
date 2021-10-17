@@ -14,7 +14,7 @@
                 </div>
                 <% } %>
 
-                    <div class="row my-5">
+                    <div class="row my-2">
                         <div class="col-6 ms-auto">
                             <h1 class="text-center">Register</h1>
                             <form class="validated-form" novalidate action="/register" method="POST"
@@ -45,6 +45,13 @@
                                 </div>
 
                                 <div class="mb-3">
+                                    <label class="form-label" for="profileDescription">Describe yourself</label>
+                                    <textarea class="form-control" name="profileDescription" id="profileDescription"
+                                        cols="30" rows="5"></textarea>
+                                    <div class="valid-feedback"></div>
+                                </div>
+
+                                <div class="mb-3">
                                     <label for="formFileMultiple" class="form-label">Upload your image(s)</label>
                                     <input type="file" class="form-control" id="formFileMultiple" name="image" multiple
                                         required>
@@ -54,8 +61,3 @@
                             </form>
                         </div>
                     </div>
-
-
-                    <form action="/chat" method="GET">
-                        <button>CHAT</button>
-                    </form>
