@@ -23,7 +23,7 @@
                                     <% potentialMatchUps.forEach((user, i)=> {%>
                                         <div class="carousel-item <%= (i==0?'active':'') %> ">
                                             <div class="card d-block w-100">
-                                                <img src=<%=user.image.url%> style="max-height: 500px"
+                                                <img src=<%=user.images[0].url%> style="max-height: 500px"
                                                 class="card-img-top"
                                                 alt="">
                                                 <div class="card-body">
@@ -42,9 +42,13 @@
                                                         </li>
                                                     </ul>
                                                     <div class="text-center card-body">
-
-                                                        <form method="POST" action="/<%=user._id%>/add">
-                                                            <button class="btn btn-primary">Send matchUp
+                                                        <form style='display:inline-block;'
+                                                            action="/profile/<%=user._id%>" method="GET">
+                                                            <button class="btn btn-primary">View Profile</button>
+                                                        </form>
+                                                        <form style='display:inline-block;' method="POST"
+                                                            action="/<%=user._id%>/add">
+                                                            <button class="btn btn-success">Send matchUp
                                                                 Request</button>
                                                         </form>
                                                     </div>
@@ -53,19 +57,19 @@
                                         </div>
                                         <% }) %>
                                 </div>
-                                <button class="carousel-control-prev" type="button"
-                                    data-bs-target="#carouselExampleControls2" data-bs-slide="prev">
-                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">Previous</span>
-                                </button>
-                                <button class="carousel-control-next" type="button"
-                                    data-bs-target="#carouselExampleControls2" data-bs-slide="next">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden">Next</span>
-                                </button>
+                                <% if (potentialMatchUps.length> 1) { %>
+                                    <button class="carousel-control-prev" type="button"
+                                        data-bs-target="#carouselExampleControls2" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Previous</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button"
+                                        data-bs-target="#carouselExampleControls2" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Next</span>
+                                    </button>
+                                    <% } %>
                             </div>
-
-
                             <% } %>
                 </div>
             </div>
@@ -81,7 +85,7 @@
                                 <% currentUser.friendRequests.forEach((user, i)=> {%>
                                     <div class="carousel-item <%= (i==0?'active':'') %> ">
                                         <div class="card d-block w-100">
-                                            <img src=<%=user.image.url%> style="max-height: 500px"
+                                            <img src=<%=user.images[0].url%> style="max-height: 500px"
                                             class="card-img-top"
                                             alt="">
                                             <div class="card-body">
@@ -114,16 +118,18 @@
                                     </div>
                                     <% }) %>
                             </div>
-                            <button class="carousel-control-prev" type="button"
-                                data-bs-target="#carouselExampleControls1" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Previous</span>
-                            </button>
-                            <button class="carousel-control-next" type="button"
-                                data-bs-target="#carouselExampleControls1" data-bs-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Next</span>
-                            </button>
+                            <% if (currentUser.friendRequests.length> 1) { %>
+                                <button class="carousel-control-prev" type="button"
+                                    data-bs-target="#carouselExampleControls1" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button"
+                                    data-bs-target="#carouselExampleControls1" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                                <% } %>
                         </div>
                         <% } %>
                 </div>
@@ -140,7 +146,7 @@
                                 <% currentUser.friends.forEach((user, i)=> {%>
                                     <div class="carousel-item <%= (i==0?'active':'') %> ">
                                         <div class="card d-block w-100">
-                                            <img src=<%=user.image.url%> style="max-height: 500px"
+                                            <img src=<%=user.images[0].url%> style="max-height: 500px"
                                             class="card-img-top"
                                             alt="">
                                             <div class="card-body">
@@ -166,16 +172,18 @@
                                     </div>
                                     <% }) %>
                             </div>
-                            <button class="carousel-control-prev" type="button"
-                                data-bs-target="#carouselExampleControls1" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Previous</span>
-                            </button>
-                            <button class="carousel-control-next" type="button"
-                                data-bs-target="#carouselExampleControls1" data-bs-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Next</span>
-                            </button>
+                            <% if (currentUser.friends.length> 1) { %>
+                                <button class="carousel-control-prev" type="button"
+                                    data-bs-target="#carouselExampleControls1" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button"
+                                    data-bs-target="#carouselExampleControls1" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                                <% } %>
                         </div>
                         <% } %>
                 </div>

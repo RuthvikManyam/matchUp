@@ -12,8 +12,13 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    image: {
-        type: { url: String, filename: String },
+    images: {
+        type: [
+            {
+                url: String,
+                filename: String
+            }
+        ],
         required: true
     },
     sentRequests: [{ type: Schema.Types.ObjectId, ref: 'User' }],

@@ -1,0 +1,48 @@
+<% layout("boilerplate.ejs") %>
+
+    <div class="row d-flex mt-5">
+        <div class="col-7 mx-auto">
+            <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <%user.images.forEach((image, i)=> { %>
+                        <div class="carousel-item <%= (i==0?'active':'') %> ">
+                            <img style="max-height: 500px" src="<%= image.url %> " class="d-block w-100" alt="...">
+                        </div>
+                        <% } )%>
+                </div>
+
+                <% if (user.images.length> 1) { %>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls"
+                        data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls"
+                        data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                    <% } %>
+            </div>
+            <div class="card d-block w-100 mb-5">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <%= user.username %>
+                    </h5>
+                    <p class="card-text">User's profile description goes here</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <%= user.city %>
+                    </li>
+                    <li class="list-group-item">
+                        <%= user.email %>
+                    </li>
+                </ul>
+                <div class="card-body">
+                    <a href="#" class="card-link">Card link</a>
+                    <a href="#" class="card-link">Another link</a>
+                </div>
+            </div>
+        </div>
+    </div>

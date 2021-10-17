@@ -21,16 +21,12 @@ const ejsMate = require("ejs-mate");
 const mongoURI = 'mongodb://localhost:27017/matchUp'
 mongoose.connect(mongoURI)
 const { isLoggedIn } = require("./middleware.js");
-const Conversation = require("./models/Conversation.js");
-const Message = require("./models/Message.js");
 mongoose.connect('mongodb://localhost:27017/matchUp')
     .then(() => console.log("Connected to MongoDB"))
     .catch((err) => console.log(err));
 
 const app = express();
-const axios = require('axios');
 const server = require("http").createServer(app);
-const io = require("socket.io")(server, { cors: { origin: "*" } })
 
 const store = new MongoDBSession({
     uri: mongoURI,
@@ -103,7 +99,7 @@ app.post("/login", passport.authenticate("local", { failureFlash: true, failureR
     res.redirect("/dashboard");
 })
 
-app.post("/register", upload.single("image"), WrapAsync(async (req, res, next) => {
+app.post("/register", upload.array("image"), WrapAsync(async (req, res, next) => {
     const registrationValidationSchema = Joi.object({
         email: Joi.string().required(),
         username: Joi.string().required(),
@@ -118,11 +114,11 @@ app.post("/register", upload.single("image"), WrapAsync(async (req, res, next) =
     }
 
     const { email, username, password, city } = req.body;
-    if (!req.file) {
-        throw new AppError("File not uploaded", 400);
+    if (req.files.length == 0) {
+        throw new AppError("You haven't upload your image(s)!", 400);
     }
-    const { path, filename } = req.file;
-    const user = new UserModel({ email, username, city, image: { url: path, filename: filename } });
+    const user = new UserModel({ email, username, city });
+    user.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
     const registeredUser = await UserModel.register(user, password);
     req.login(registeredUser, async (error) => {
         if (error) return next(error);
@@ -187,6 +183,14 @@ app.post("/:id/reject", isLoggedIn, WrapAsync(async (req, res) => {
     res.redirect("/dashboard");
 }))
 
+
+app.get("/profile/:id", async (req, res) => {
+    const { id } = req.params;
+    const user = await UserModel.findById(id);
+    res.render("profile.ejs", { user });
+})
+
+
 app.all('*', (req, res, next) => {
     next(new AppError('Page Not Found', 404))
 })
@@ -201,14 +205,3 @@ server.listen(3000, () => {
     console.log(`Listening on port 3000`);
 })
 
-io.on("connection", (socket) => {
-    console.log("USER CONNECTED: " + socket.id);
-    socket.on("send-message", (message, room) => {
-        if (room === "") {
-            socket.broadcast.emit("receive-message", message);
-        }
-        else {
-            socket.to(room).emit("receive-message", message);
-        }
-    })
-})
