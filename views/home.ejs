@@ -45,9 +45,11 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <input type="file" name="image" multiple>
+                                    <label for="formFileMultiple" class="form-label">Upload your image(s)</label>
+                                    <input type="file" class="form-control" id="formFileMultiple" name="image" multiple
+                                        required>
+                                    <div class="valid-feedback"></div>
                                 </div>
-
                                 <button class="btn btn-success">Register</button>
                             </form>
                         </div>
