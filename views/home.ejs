@@ -14,40 +14,78 @@
                 </div>
                 <% } %>
 
-                    <div class="row my-2">
+                    <div class="row mt-1 mb-5">
                         <div class="col-6 ms-auto">
-                            <h1 class="text-center">Register</h1>
+                            <h3 class="text-center">Register</h3>
                             <form class="validated-form" novalidate action="/register" method="POST"
                                 enctype="multipart/form-data">
-                                <div class="mb-3">
 
-                                    <label class="form-label" for="username">Username</label>
-                                    <input class="form-control" type="text" id="username" name="username" required>
+                                <div class="input-group mt-3 mb-2">
+                                    <span class="input-group-text">@</span>
+                                    <input type="text" class="form-control" id="username" name="username"
+                                        placeholder="Username" required>
+                                    <input type="text" class="form-control" id="password" name="password"
+                                        placeholder="Password" required>
                                     <div class="valid-feedback"></div>
                                 </div>
 
-                                <div class="mb-3">
+
+                                <div class="mb-2">
                                     <label class="form-label" for="email">Email</label>
                                     <input class="form-control" type="email" id="email" name="email" required>
                                     <div class="valid-feedback"></div>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label" for="password">Password</label>
-                                    <input class="form-control" type="password" id="password" name="password" required>
-                                    <div class="valid-feedback"></div>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <label class="form-label" for="city">City</label>
+                                            <input class="form-control" type="text" id="city" name="city" required>
+                                            <div class="valid-feedback"></div>
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label" for="start">Date of Birth:</label>
+                                            <input class="form-control" type="date" name="dob" min="1900-01-01"
+                                                max="2050-12-31" required>
+                                            <div class="valid-feedback"></div>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label class="form-label" for="city">City</label>
-                                    <input class="form-control" type="text" id="city" name="city" required>
-                                    <div class="valid-feedback"></div>
+
+                                <div class="row mb-2">
+                                    <div class="col-4">
+                                        <select class="form-select" name="gender" required>
+                                            <option value="">Your Gender</option>
+                                            <option value="male">Male</option>
+                                            <option value="female">Female</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-4">
+                                        <select class="form-select mb-2" name="genderPreference" required>
+                                            <option value="">Gender Preference</option>
+                                            <option value="male">Male</option>
+                                            <option value="female">Female</option>
+                                        </select>
+                                    </div>
+
+
+                                    <div class="col-4">
+                                        <select class="form-select" name="ageRange" required>
+                                            <option value="">Age Preference</option>
+                                            <option value="maxgap_5">+=5</option>
+                                            <option value="maxgap_10">+=10</option>
+                                            <option value="maxgap_20">+=20</option>
+                                        </select>
+                                    </div>
                                 </div>
 
-                                <div class="mb-3">
+
+                                <div class="mb-2">
                                     <label class="form-label" for="profileDescription">Describe yourself</label>
                                     <textarea class="form-control" name="profileDescription" id="profileDescription"
-                                        cols="30" rows="5"></textarea>
+                                        cols="30" rows="3" required></textarea>
                                     <div class="valid-feedback"></div>
                                 </div>
 
