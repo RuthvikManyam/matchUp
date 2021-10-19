@@ -9,9 +9,9 @@
         </div>
         <% } %>
 
-            <h3 class="text-center">
+            <h4 class="text-center">
                 <%= currentUser.username %>'s dashboard
-            </h3>
+            </h4>
 
 
             <div class="row d-flex mt-5">
@@ -34,7 +34,7 @@
                                                 </h5>
                                                 <ul class="list-group list-group-flush">
                                                     <li class="list-group-item">
-                                                        <%= user.email %>
+                                                        <span>Age: <%= helperScripts.calculateAge(user.dob) %>
                                                     </li>
                                                     <li class="list-group-item">
                                                         <%= user.city %>
@@ -73,9 +73,9 @@
 
 
 
-                <div class="col-6 mx-auto">
+                <div class="col-5 mx-auto">
                     <% if(potentialMatchUps.length < 1) { %>
-                        <h3 class="text-center">Sorry! No profiles to show</h3>
+                        <h4 class="text-center">Sorry! No profiles to show</h4>
                         <% } else { %>
                             <h3 class="text-center">Profiles you might be interested in ..</h3>
                             <div id="carouselExampleControls2" class="carousel slide" data-bs-ride="carousel">
@@ -86,16 +86,14 @@
                                                 <img src=<%=user.images[0].url%> style="max-height: 500px"
                                                 class="card-img-top"
                                                 alt="">
-                                                <div class="card-body">
+                                                <div class="card-body text-center">
                                                     <h5 class="card-title">
                                                         <%= user.username %>
                                                     </h5>
-                                                    <p class="card-text">User's profile description goes
-                                                        here
-                                                    </p>
                                                     <ul class="list-group list-group-flush">
                                                         <li class="list-group-item">
-                                                            <%= user.email %>
+                                                            <span>Age: <%= helperScripts.calculateAge(user.dob) %>
+                                                            </span>
                                                         </li>
                                                         <li class="list-group-item">
                                                             <%= user.city %>
@@ -154,13 +152,10 @@
                                             <img src=<%=user.images[0].url%> style="max-height: 500px"
                                             class="card-img-top"
                                             alt="">
-                                            <div class="card-body">
+                                            <div class="card-body text-center">
                                                 <h5 class="card-title">
                                                     <%= user.username %>
                                                 </h5>
-                                                <p class="card-text">User's profile description goes
-                                                    here
-                                                </p>
                                                 <ul class="list-group list-group-flush">
                                                     <li class="list-group-item">
                                                         <%= user.email %>
@@ -170,7 +165,14 @@
                                                     </li>
                                                 </ul>
                                                 <div class="text-center card-body">
-                                                    <a href="">Generic Link</a>
+                                                    <form style='display:inline-block;' action="/profile/<%=user._id%>"
+                                                        method="GET">
+                                                        <button class="btn btn-primary">View Profile</button>
+                                                    </form>
+                                                    <form style='display:inline-block;' method="POST"
+                                                        action="/<%=user._id%>/date">
+                                                        <button class="btn btn-warning">Schedule a date</button>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
@@ -196,15 +198,9 @@
 
 
             <script>
-                /* Set the width of the sidebar to 250px and the left margin of the page content to 250px */
-                function openNav() {
-                    document.getElementById("mySidebar").style.width = "250px";
-                    document.getElementById("main").style.marginLeft = "250px";
-                }
-
-                /* Set the width of the sidebar to 0 and the left margin of the page content to 0 */
-                function closeNav() {
-                    document.getElementById("mySidebar").style.width = "0";
-                    document.getElementById("main").style.marginLeft = "0";
+                function calculateAge(birthday) { // birthday is a date
+                    var ageDifMs = Date.now() - birthday.getTime();
+                    var ageDate = new Date(ageDifMs); // miliseconds from epoch
+                    return Math.abs(ageDate.getUTCFullYear() - 1970);
                 }
             </script>

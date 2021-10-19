@@ -60,6 +60,7 @@ passport.deserializeUser(UserModel.deserializeUser());
 
 app.use((req, res, next) => {
     res.locals.currentUser = req.user;
+    res.locals.helperScripts = require("./utils/helperScripts");
     res.locals.success = req.flash("success");
     res.locals.error = req.flash("error");
     next();
