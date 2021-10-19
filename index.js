@@ -21,6 +21,7 @@ const ejsMate = require("ejs-mate");
 const mongoURI = 'mongodb://localhost:27017/matchUp'
 mongoose.connect(mongoURI)
 const { isLoggedIn } = require("./middleware.js");
+const User = require("./models/User");
 mongoose.connect('mongodb://localhost:27017/matchUp')
     .then(() => console.log("Connected to MongoDB"))
     .catch((err) => console.log(err));
@@ -190,12 +191,18 @@ app.post("/:id/reject", isLoggedIn, WrapAsync(async (req, res) => {
 }))
 
 
-app.get("/profile/:id", async (req, res) => {
+app.get("/:id/profile", async (req, res) => {
     const { id } = req.params;
     const user = await UserModel.findById(id);
     res.render("profile.ejs", { user });
 })
 
+
+app.get("/:id/date", async (req, res) => {
+    const { id } = req.params;
+    const user = await UserModel.findById(id);
+    res.render("date.ejs", { user });
+})
 
 app.all('*', (req, res, next) => {
     next(new AppError('Page Not Found', 404))

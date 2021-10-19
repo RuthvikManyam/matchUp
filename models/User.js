@@ -46,6 +46,12 @@ const userSchema = new Schema({
         enum: ['maxgap_5', 'maxgap_10', 'maxgap_20'],
         required: true
     },
+    dates: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "Date"
+        }
+    ],
     sentRequests: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     friendRequests: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]

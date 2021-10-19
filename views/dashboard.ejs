@@ -28,7 +28,7 @@
                                             alt="">
                                             <div class="card-body text-center">
                                                 <h5 class="card-title">
-                                                    <a href="/profile/<%=user._id%> ">
+                                                    <a href="/<%=user._id%>/profile">
                                                         <%= user.username %>
                                                     </a>
                                                 </h5>
@@ -88,7 +88,9 @@
                                                 alt="">
                                                 <div class="card-body text-center">
                                                     <h5 class="card-title">
-                                                        <%= user.username %>
+                                                        <a href="/<%=user._id%>/profile">
+                                                            <%= user.username %>
+                                                        </a>
                                                     </h5>
                                                     <ul class="list-group list-group-flush">
                                                         <li class="list-group-item">
@@ -100,10 +102,6 @@
                                                         </li>
                                                     </ul>
                                                     <div class="text-center card-body">
-                                                        <form style='display:inline-block;'
-                                                            action="/profile/<%=user._id%>" method="GET">
-                                                            <button class="btn btn-primary">View Profile</button>
-                                                        </form>
                                                         <form style='display:inline-block;' method="POST"
                                                             action="/<%=user._id%>/add">
                                                             <button class="btn btn-success">Send matchUp
@@ -154,7 +152,9 @@
                                             alt="">
                                             <div class="card-body text-center">
                                                 <h5 class="card-title">
-                                                    <%= user.username %>
+                                                    <a href="/<%=user._id%>/profile">
+                                                        <%= user.username %>
+                                                    </a>
                                                 </h5>
                                                 <ul class="list-group list-group-flush">
                                                     <li class="list-group-item">
@@ -165,10 +165,6 @@
                                                     </li>
                                                 </ul>
                                                 <div class="text-center card-body">
-                                                    <form style='display:inline-block;' action="/profile/<%=user._id%>"
-                                                        method="GET">
-                                                        <button class="btn btn-primary">View Profile</button>
-                                                    </form>
                                                     <form style='display:inline-block;' method="POST"
                                                         action="/<%=user._id%>/date">
                                                         <button class="btn btn-warning">Schedule a date</button>
