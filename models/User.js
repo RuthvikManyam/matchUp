@@ -25,6 +25,27 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    dob: {
+        type: Date,
+        min: '1900-01-01',
+        max: '2050-12-31',
+        required: true
+    },
+    gender: {
+        type: String,
+        enum: ['male', 'female'],
+        required: true
+    },
+    genderPreference: {
+        type: String,
+        enum: ['male', 'female'],
+        required: true
+    },
+    ageRange: {
+        type: String,
+        enum: ['maxgap_5', 'maxgap_10', 'maxgap_20'],
+        required: true
+    },
     sentRequests: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     friendRequests: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]

@@ -105,7 +105,11 @@ app.post("/register", upload.array("image"), WrapAsync(async (req, res, next) =>
         username: Joi.string().required(),
         password: Joi.string().required(),
         city: Joi.string().required(),
-        profileDescription: Joi.string().required()
+        profileDescription: Joi.string().required(),
+        gender: Joi.string().required(),
+        genderPreference: Joi.string().required(),
+        ageRange: Joi.string().required(),
+        dob: Joi.date().required()
     });
 
     const { error } = registrationValidationSchema.validate(req.body);
@@ -114,11 +118,11 @@ app.post("/register", upload.array("image"), WrapAsync(async (req, res, next) =>
         throw new AppError(messages, 400);
     }
 
-    const { email, username, password, city, profileDescription } = req.body;
+    const { email, username, password, city, profileDescription, gender, genderPreference, dob, ageRange } = req.body;
     if (req.files.length == 0) {
         throw new AppError("You haven't upload your image(s)!", 400);
     }
-    const user = new UserModel({ email, username, city, profileDescription });
+    const user = new UserModel({ email, username, city, profileDescription, gender, genderPreference, dob, ageRange });
     user.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
     const registeredUser = await UserModel.register(user, password);
     req.login(registeredUser, async (error) => {
