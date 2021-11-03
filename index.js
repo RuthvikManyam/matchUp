@@ -87,7 +87,22 @@ app.get("/dashboard", isLoggedIn, WrapAsync(async (req, res) => {
     await req.user.populate("friendRequests");
     await req.user.populate("sentRequests");
     await req.user.populate("friends");
-    res.render("dashboard.ejs", { users, potentialMatchUps });
+    await req.user.populate({
+        path: 'dates',
+        model: 'Date',
+        populate: {
+            path: 'sender',
+            model: 'User'
+        }
+    })
+    const dates = [];
+    for (let date of req.user.dates) {
+        if ((req.user._id.valueOf() == date.receiver._id.valueOf())) {
+            dates.push(date);
+        }
+    }
+    console.log(dates);
+    res.render("dashboard.ejs", { users, potentialMatchUps, dates });
 }))
 
 
