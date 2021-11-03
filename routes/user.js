@@ -7,8 +7,12 @@ const WrapAsync = require('../utils/WrapAsync');
 const passport = require("passport");
 const { storage } = require("../cloudinary/index.js");
 const multer = require("multer");
+const Joi = require("joi");
 const upload = multer({ storage });
 const AppError = require('../utils/AppError');
+const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
+const mapBoxToken = process.env.MAPBOX_TOKEN;
+const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 
 router.get("/", (req, res) => {
     req.session.isAuth = true;
@@ -87,12 +91,18 @@ router.post("/register", upload.array("image"), WrapAsync(async (req, res, next)
         throw new AppError(messages, 400);
     }
 
+
+    const geodata = await geocoder.forwardGeocode({
+        query: req.body.city,
+        limit: 1
+    }).send();
     const { email, username, password, city, profileDescription, gender, genderPreference, dob, ageRange } = req.body;
     if (req.files.length == 0) {
         throw new AppError("You haven't upload your image(s)!", 400);
     }
     const user = new UserModel({ email, username, city, profileDescription, gender, genderPreference, dob, ageRange });
     user.images = req.files.map(f => ({ url: f.path, filename: f.filename }));
+    user.geometry = geodata.body.features[0].geometry;
     const registeredUser = await UserModel.register(user, password);
     req.login(registeredUser, async (error) => {
         if (error) return next(error);
