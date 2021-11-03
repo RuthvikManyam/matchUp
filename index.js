@@ -95,14 +95,17 @@ app.get("/dashboard", isLoggedIn, WrapAsync(async (req, res) => {
             model: 'User'
         }
     })
-    const dates = [];
+    const dateRequests = [];
+    const scheduledDates = [];
     for (let date of req.user.dates) {
-        if ((req.user._id.valueOf() == date.receiver._id.valueOf())) {
-            dates.push(date);
+        if ((req.user._id.valueOf() == date.receiver._id.valueOf()) && date.status == "pending") {
+            dateRequests.push(date);
+        }
+        else if ((req.user._id.valueOf() == date.receiver._id.valueOf() && date.status == "accepted")) {
+            scheduledDates.push(date);
         }
     }
-    console.log(dates);
-    res.render("dashboard.ejs", { users, potentialMatchUps, dates });
+    res.render("dashboard.ejs", { users, potentialMatchUps, dateRequests, scheduledDates });
 }))
 
 
@@ -229,6 +232,20 @@ app.post("/date/:recipient", async (req, res) => {
     res.redirect("/dashboard");
 })
 
+app.post("/date/accept/:dateID", async (req, res) => {
+    const date = await DateModel.findById(req.params.dateID);
+    console.log(date);
+    date.status = "accepted";
+    await date.save();
+    req.flash("success", "You have a new date!");
+    res.redirect("/dashboard");
+})
+
+
+app.post("/date/reject/:dateID", async (req, res) => {
+
+    res.send("You made it!");
+})
 
 app.all('*', (req, res, next) => {
     next(new AppError('Page Not Found', 404))

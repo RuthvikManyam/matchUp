@@ -192,16 +192,73 @@
                 </div>
             </div>
 
-            <!-- dates -->
+            <!--scheduled  dates -->
+
+
+
+
 
 
             <div class="row justify-content-center">
                 <div class="col-6 mb-5">
-                    <% if(dates.length>= 1) { %>
+                    <% if(scheduledDates.length>= 1) { %>
+                        <h3 class="text-center">Scheduled dates:</h3>
+                        <div id="carouselExampleControls4" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                <% scheduledDates.forEach((date, i)=> {%>
+                                    <div class="carousel-item <%= (i==0?'active':'') %> ">
+                                        <div class="card d-block">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title">
+                                                    <a href="/<%=date.sender._id%>">
+                                                        <%= date.sender.username %>
+                                                    </a>
+                                                </h5>
+                                                <ul class="list-group list-group-flush">
+                                                    <li class="list-group-item">
+                                                        Location: <%= date.location%>
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        Date: <%= date.date%>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                            </div>
+                            <% if (scheduledDates.length> 1) { %>
+                                <button class="carousel-control-prev" type="button"
+                                    data-bs-target="#carouselExampleControls4" data-bs-slide="prev">
+                                    <span style="background-color: rgb(97, 97, 97);" class="carousel-control-prev-icon"
+                                        aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class=" carousel-control-next" type="button"
+                                    data-bs-target="#carouselExampleControls4" data-bs-slide="next">
+                                    <span style="background-color: rgb(97, 97, 97);" class="carousel-control-next-icon"
+                                        aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                                <% } %>
+                        </div>
+                        <% } %>
+
+                </div>
+            </div>
+
+
+            <!-- date requests -->
+
+
+
+            <div class="row justify-content-center">
+                <div class="col-6 mb-5">
+                    <% if(dateRequests.length>= 1) { %>
                         <h3 class="text-center">Date requests you have:</h3>
                         <div id="carouselExampleControls3" class="carousel slide" data-bs-ride="carousel">
                             <div class="carousel-inner">
-                                <% dates.forEach((date, i)=> {%>
+                                <% dateRequests.forEach((date, i)=> {%>
                                     <div class="carousel-item <%= (i==0?'active':'') %> ">
                                         <div class="card d-block">
                                             <div class="card-body text-center">
@@ -219,10 +276,12 @@
                                                     </li>
                                                 </ul>
                                                 <div class="text-center card-body">
-                                                    <form style="display: inline" method="GET" action="/">
+                                                    <form style="display: inline" method="POST"
+                                                        action="/date/accept/<%= date._id %> ">
                                                         <button class="btn btn-success">Accept</button>
                                                     </form>
-                                                    <form style="display: inline" method="GET" action="/">
+                                                    <form style="display: inline" method="POST"
+                                                        action="/date/reject/<%= date._id %> ">
                                                         <button class="btn btn-danger">Reject</button>
                                                     </form>
                                                 </div>
@@ -231,7 +290,7 @@
                                     </div>
                                     <% }) %>
                             </div>
-                            <% if (dates.length> 1) { %>
+                            <% if (dateRequests.length> 1) { %>
                                 <button class="carousel-control-prev" type="button"
                                     data-bs-target="#carouselExampleControls3" data-bs-slide="prev">
                                     <span style="background-color: rgb(97, 97, 97);" class="carousel-control-prev-icon"
