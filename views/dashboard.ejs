@@ -28,7 +28,7 @@
                                             alt="">
                                             <div class="card-body text-center">
                                                 <h5 class="card-title">
-                                                    <a href="/<%=user._id%>/profile">
+                                                    <a href="/<%=user._id%>">
                                                         <%= user.username %>
                                                     </a>
                                                 </h5>
@@ -42,11 +42,11 @@
                                                 </ul>
                                                 <div class="text-center card-body">
                                                     <form style="display: inline" method="POST"
-                                                        action="/<%=user._id%>/accept">
+                                                        action="/match/accept/<%=user._id%>">
                                                         <button class="btn btn-success">Accept</button>
                                                     </form>
                                                     <form style="display: inline" method="POST"
-                                                        action="/<%=user._id%>/reject">
+                                                        action="/match/reject/<%=user._id%>">
                                                         <button class="btn btn-danger">Reject</button>
                                                     </form>
                                                 </div>
@@ -88,7 +88,7 @@
                                                 alt="">
                                                 <div class="card-body text-center">
                                                     <h5 class="card-title">
-                                                        <a href="/<%=user._id%>/profile">
+                                                        <a href="/<%=user._id%>">
                                                             <%= user.username %>
                                                         </a>
                                                     </h5>
@@ -103,7 +103,7 @@
                                                     </ul>
                                                     <div class="text-center card-body">
                                                         <form style='display:inline-block;' method="POST"
-                                                            action="/<%=user._id%>/add">
+                                                            action="/match/add/<%=user._id%>">
                                                             <button class="btn btn-success">Send matchUp
                                                                 Request</button>
                                                         </form>
@@ -152,7 +152,7 @@
                                             alt="">
                                             <div class="card-body text-center">
                                                 <h5 class="card-title">
-                                                    <a href="/<%=user._id%>/profile">
+                                                    <a href="/<%=user._id%>">
                                                         <%= user.username %>
                                                     </a>
                                                 </h5>
@@ -165,8 +165,8 @@
                                                     </li>
                                                 </ul>
                                                 <div class="text-center card-body">
-                                                    <form style='display:inline-block;' method="POST"
-                                                        action="/<%=user._id%>/date">
+                                                    <form style='display:inline-block;' method="GET"
+                                                        action="/date/<%=user._id%>">
                                                         <button class="btn btn-warning">Schedule a date</button>
                                                     </form>
                                                 </div>

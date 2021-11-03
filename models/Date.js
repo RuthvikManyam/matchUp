@@ -21,8 +21,6 @@ const dateSchema = new Schema({
     },
     date: {
         type: Date,
-        min: '2021-01-01',
-        max: '2050-12-31',
         required: true
     }
 });

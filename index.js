@@ -15,6 +15,7 @@ const session = require("express-session");
 const MongoDBSession = require('connect-mongodb-session')(session);
 const flash = require("connect-flash");
 const UserModel = require("./models/User");
+const DateModel = require("./models/Date");
 const WrapAsync = require('./utils/WrapAsync');
 const AppError = require('./utils/AppError');
 const ejsMate = require("ejs-mate");
@@ -136,7 +137,7 @@ app.post("/register", upload.array("image"), WrapAsync(async (req, res, next) =>
 }));
 
 
-app.post("/:id/add", isLoggedIn, WrapAsync(async (req, res) => {
+app.post("/match/add/:id", isLoggedIn, WrapAsync(async (req, res) => {
     const user1 = req.user;
     const user2 = await UserModel.findById(req.params.id);
     await UserModel.updateOne(
@@ -151,7 +152,7 @@ app.post("/:id/add", isLoggedIn, WrapAsync(async (req, res) => {
     res.redirect("/dashboard");
 }))
 
-app.post("/:id/accept", isLoggedIn, WrapAsync(async (req, res) => {
+app.post("/match/accept/:id", isLoggedIn, WrapAsync(async (req, res) => {
     const user1 = req.user;
     const user2 = await UserModel.findById(req.params.id);
     await UserModel.updateOne(
@@ -171,7 +172,7 @@ app.post("/:id/accept", isLoggedIn, WrapAsync(async (req, res) => {
 }))
 
 
-app.post("/:id/reject", isLoggedIn, WrapAsync(async (req, res) => {
+app.post("/match/reject/:id", isLoggedIn, WrapAsync(async (req, res) => {
     const user1 = req.user;
     const user2 = await UserModel.findById(req.params.id);
     await UserModel.findByIdAndUpdate(
@@ -191,18 +192,28 @@ app.post("/:id/reject", isLoggedIn, WrapAsync(async (req, res) => {
 }))
 
 
-app.get("/:id/profile", async (req, res) => {
+app.get("/:id", async (req, res) => {
     const { id } = req.params;
     const user = await UserModel.findById(id);
     res.render("profile.ejs", { user });
 })
 
 
-app.get("/:id/date", async (req, res) => {
-    const { id } = req.params;
-    const user = await UserModel.findById(id);
-    res.render("date.ejs", { user });
+
+app.get("/date/:recipient", async (req, res) => {
+    const recipient = await UserModel.findById(req.params.recipient);
+    res.render("dateScheduler.ejs", { recipient });
 })
+
+app.post("/date/:recipient", async (req, res) => {
+    const date = new DateModel({ sender: req.user._id, receiver: req.params.recipient, status: "pending", location: req.body.location, date: req.body.dod });
+    await date.save();
+    await UserModel.findOneAndUpdate({ _id: req.user._id }, { $push: { dates: date._id } });
+    await UserModel.findOneAndUpdate({ _id: req.params.recipient }, { $push: { dates: date._id } });
+    req.flash("success", "Sent a date request!");
+    res.redirect("/dashboard");
+})
+
 
 app.all('*', (req, res, next) => {
     next(new AppError('Page Not Found', 404))

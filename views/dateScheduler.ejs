@@ -1,0 +1,24 @@
+<% layout("boilerplate.ejs") %>
+
+    <div class="row mt-5 mb-5 justify-content-center">
+        <div class="col-6">
+            <h3 class="text-center">Schedule a date with @<%= recipient.username %>
+            </h3>
+            <form class="validated-form" novalidate action="/date/<%= recipient._id %> " method="POST">
+                <div class="mb-2">
+                    <label class="form-label" for="location">Location</label>
+                    <input class="form-control" type="text" id="location" name="location" required>
+                    <div class="valid-feedback"></div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="dod">Scheduled Date:</label>
+                    <input class="form-control" id="dod" type="date" name="dod" min="1900-01-01" max="2050-12-31"
+                        required>
+                    <div class="valid-feedback"></div>
+                </div>
+                <div class="text-center">
+                    <button class="btn btn-success">Send a date request!</button>
+                </div>
+            </form>
+        </div>
+    </div>
