@@ -64,6 +64,7 @@ app.use((req, res, next) => {
     res.locals.currentUser = req.user;
     res.locals.helperScripts = require("./utils/helperScripts");
     res.locals.success = req.flash("success");
+    res.locals.info = req.flash("info");
     res.locals.error = req.flash("error");
     next();
 })
@@ -90,10 +91,14 @@ app.get("/dashboard", isLoggedIn, WrapAsync(async (req, res) => {
     await req.user.populate({
         path: 'dates',
         model: 'Date',
-        populate: {
+        populate: [{
             path: 'sender',
             model: 'User'
-        }
+        },
+        {
+            path: 'receiver',
+            model: 'User'
+        }]
     })
     const dateRequests = [];
     const scheduledDates = [];
@@ -101,7 +106,9 @@ app.get("/dashboard", isLoggedIn, WrapAsync(async (req, res) => {
         if ((req.user._id.valueOf() == date.receiver._id.valueOf()) && date.status == "pending") {
             dateRequests.push(date);
         }
-        else if ((req.user._id.valueOf() == date.receiver._id.valueOf() && date.status == "accepted")) {
+        else if ((req.user._id.valueOf() == date.receiver._id.valueOf() ||
+            (req.user._id.valueOf() == date.sender._id.valueOf()) &&
+            date.status == "accepted")) {
             scheduledDates.push(date);
         }
     }
@@ -234,7 +241,6 @@ app.post("/date/:recipient", async (req, res) => {
 
 app.post("/date/accept/:dateID", async (req, res) => {
     const date = await DateModel.findById(req.params.dateID);
-    console.log(date);
     date.status = "accepted";
     await date.save();
     req.flash("success", "You have a new date!");
@@ -243,8 +249,19 @@ app.post("/date/accept/:dateID", async (req, res) => {
 
 
 app.post("/date/reject/:dateID", async (req, res) => {
+    const date = await DateModel.findById(req.params.dateID);
 
-    res.send("You made it!");
+    await UserModel.findOneAndUpdate(
+        { _id: date.sender._id },
+        { $pull: { dates: req.params.dateID } }
+    );
+    await UserModel.findOneAndUpdate(
+        { _id: date.receiver._id },
+        { $pull: { dates: req.params.dateID } }
+    );
+    await DateModel.findOneAndDelete({ _id: req.params.dateID });
+    req.flash("info", "Rejected the date request");
+    res.redirect("/dashboard");
 })
 
 app.all('*', (req, res, next) => {
