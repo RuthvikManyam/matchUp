@@ -4,6 +4,8 @@ function calculateAge(birthday) { // birthday is a date
     return Math.abs(ageDate.getUTCFullYear() - 1970);
 }
 
+
+
 module.exports = {
     calculateAge
 }

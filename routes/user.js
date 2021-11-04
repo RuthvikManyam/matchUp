@@ -14,10 +14,10 @@ const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const mapBoxToken = process.env.MAPBOX_TOKEN;
 const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 
-router.get("/", (req, res) => {
+router.get("/", WrapAsync(async (req, res) => {
     req.session.isAuth = true;
     res.render("home.ejs");
-})
+}))
 
 router.get("/dashboard", isLoggedIn, WrapAsync(async (req, res) => {
     const users = await UserModel.find({});

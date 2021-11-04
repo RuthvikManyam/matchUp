@@ -39,6 +39,8 @@ app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "public")));
+
 
 const sessionConfig = {
     secret: "defaultKey",
@@ -60,8 +62,9 @@ passport.use(new localStrategy(UserModel.authenticate()));
 passport.serializeUser(UserModel.serializeUser());
 passport.deserializeUser(UserModel.deserializeUser());
 
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
     res.locals.currentUser = req.user;
+    res.locals.users = await UserModel.find({});
     res.locals.helperScripts = require("./utils/helperScripts");
     res.locals.success = req.flash("success");
     res.locals.info = req.flash("info");
