@@ -19,6 +19,7 @@ const DateModel = require("./models/Date");
 const WrapAsync = require('./utils/WrapAsync');
 const AppError = require('./utils/AppError');
 const ejsMate = require("ejs-mate");
+const methodOverride = require("method-override");
 const mongoURI = 'mongodb://localhost:27017/matchUp'
 mongoose.connect(mongoURI)
 const { isLoggedIn } = require("./middleware.js");
@@ -40,6 +41,7 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(methodOverride("_method"));
 
 
 const sessionConfig = {

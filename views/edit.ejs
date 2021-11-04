@@ -1,0 +1,35 @@
+<% layout("boilerplate.ejs") %>
+
+<div class="row justify-content-center mt-5">
+    <div class="col-6">
+        <h3 class="text-center">Edit Your Profile</h3>
+        <form class="validated-form" novalidate action="/edit?_method=PUT" method="POST">
+            <div class="mb-2">
+                <label class="form-label" for="email">Email</label>
+                <input class="form-control" value="<%= currentUser.email %> " type="email" id="email" name="email" required>
+                <div class="valid-feedback"></div>
+            </div>
+
+            <div class="mb-3">
+                        <label class="form-label" for="city">City</label>
+                        <input class="form-control" value="<%= currentUser.city %> " type="text" id="city" name="city" required>
+            </div>
+
+            <div class="mb-2">
+                <label class="form-label" for="profileDescription">Describe yourself</label>
+                <textarea class="form-control" name="profileDescription" id="profileDescription"
+                    cols="30" rows="3" required><%= currentUser.profileDescription %> </textarea>
+                <div class="valid-feedback"></div>
+            </div>
+
+            <!-- <div class="mb-3">
+                <label for="formFileMultiple" class="form-label">Upload your image(s)</label>
+                <input type="file" class="form-control" id="formFileMultiple" name="image" multiple
+                    required>
+                <div class="valid-feedback"></div>
+            </div> -->
+            <button class="mt-2 mb-4 btn btn-success">Edit</button>
+        </form>
+        <a href="/dashboard">Back to Dashboard</a>
+    </div>
+</div>

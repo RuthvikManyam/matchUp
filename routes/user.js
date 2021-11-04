@@ -19,6 +19,17 @@ router.get("/", WrapAsync(async (req, res) => {
     res.render("home.ejs");
 }))
 
+router.get("/edit", isLoggedIn, (req,res)=>{
+    res.render("edit.ejs");
+})
+
+router.put("/edit", isLoggedIn, WrapAsync(async (req,res)=>{
+    const request = req.body;
+    await UserModel.findByIdAndUpdate(req.user._id, {...req.body});
+    req.flash("success", "Updated your Profile");
+    res.redirect("/dashboard");
+}))
+
 router.get("/dashboard", isLoggedIn, WrapAsync(async (req, res) => {
     const users = await UserModel.find({});
     const potentialMatchUps = [];
