@@ -3,7 +3,7 @@
 <div class="row justify-content-center mt-5">
     <div class="col-6">
         <h3 class="text-center">Edit Your Profile</h3>
-        <form class="validated-form" novalidate action="/edit?_method=PUT" method="POST">
+        <form class="validated-form" novalidate action="/edit?_method=PUT" method="POST"  enctype="multipart/form-data" >
             <div class="mb-2">
                 <label class="form-label" for="email">Email</label>
                 <input class="form-control" value="<%= currentUser.email %> " type="email" id="email" name="email" required>
@@ -22,12 +22,23 @@
                 <div class="valid-feedback"></div>
             </div>
 
-            <!-- <div class="mb-3">
-                <label for="formFileMultiple" class="form-label">Upload your image(s)</label>
-                <input type="file" class="form-control" id="formFileMultiple" name="image" multiple
-                    required>
+            <div class="mb-3">
+                <label for="formFileMultiple" class="form-label">Add more image(s)</label>
+                <input type="file" class="form-control" id="formFileMultiple" name="image" multiple>
                 <div class="valid-feedback"></div>
-            </div> -->
+            </div>
+
+            <div class="mb-3">
+                <% currentUser.images.forEach(function(img, i) { %>
+                    <img src="<%=img.url%>" class="img-thumbnail" alt="">
+                    <div class="form-check-inline">
+                        <input type="checkbox" id="img-<%=i%>" name="deleteImages[]" value=<%=img.filename%>>
+                    </div>
+                    <label for="img-<%=i%>">Delete</label>
+                    <% }) %> 
+            </div>
+
+            
             <button class="mt-2 mb-4 btn btn-success">Edit</button>
         </form>
         <a href="/dashboard">Back to Dashboard</a>

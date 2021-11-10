@@ -23,11 +23,16 @@ router.get("/edit", isLoggedIn, (req,res)=>{
     res.render("edit.ejs");
 })
 
-router.put("/edit", isLoggedIn, WrapAsync(async (req,res)=>{
-    const request = req.body;
-    await UserModel.findByIdAndUpdate(req.user._id, {...req.body});
-    req.flash("success", "Updated your Profile");
-    res.redirect("/dashboard");
+router.put("/edit", isLoggedIn, upload.array("image"), WrapAsync(async (req,res)=>{
+     req.user = await UserModel.findByIdAndUpdate(req.user._id, {...req.body});
+     const imgs = req.files.map(f => ({url: f.path, filename: f.filename}));
+     req.user.images.push(...imgs);
+     if(req.body.deleteImages){
+        await req.user.updateOne({$pull: {images: {filename: {$in: req.body.deleteImages}}}});
+    }
+     await req.user.save();
+     req.flash("success", "Updated your Profile");
+     res.redirect("/dashboard");
 }))
 
 router.get("/dashboard", isLoggedIn, WrapAsync(async (req, res) => {
